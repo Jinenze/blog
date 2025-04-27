@@ -26,6 +26,7 @@ jobs:
       - name: Download Source
         run: |
           git clone --branch main --single-branch --depth 1 https://github.com/Jinenze/blog.git tmp-repo
+          rm -r source
           cp -r tmp-repo/* .
           rm -r tmp-repo
 
