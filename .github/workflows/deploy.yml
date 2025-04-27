@@ -1,0 +1,39 @@
+name: Deploy Hexo Blog
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+
+      - name: Install Hexo
+        run: |
+          npm install -g hexo-cli
+          hexo init
+          npm install hexo-theme-next
+          npm install hexo-generator-searchdb
+
+      - name: Download Source
+        run: |
+          git clone --branch main --single-branch --depth 1 https://github.com/Jinenze/blog.git tmp-repo
+          cp -r tmp-repo/* .
+          rm -r tmp-repo
+
+      - name: Build
+        run: hexo generate
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
