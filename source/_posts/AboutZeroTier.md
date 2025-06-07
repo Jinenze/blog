@@ -7,17 +7,17 @@ lang: zh-CN
 
 >我没有阅读过源码，请注意辨别
 
-ZeroTier可以说只有一个功能，就是将设备添加到另一个由ZeroTier控制的虚拟局域网
+ZeroTier可以将设备添加至一个由ZeroTier网络控制器控制的虚拟局域网
 
-虽然简单，但十分强大
+通过中央服务器的协调来进行节点间的直连
 
-在国内环境下这也是合法访问个人信息平台的较为简单的方式
+当你在你的家庭服务器上部署了个人网盘，密码托管，即时通讯，游戏服务器这样的服务时
 
-比如在你的家庭服务器上部署的个人网盘，密码托管，即时通讯，游戏服务器这样的服务
-
-当你想让在其他城市的酒店里的设备，服务器机房里的设备，远在天边的其他人的设备访问到这些服务
+想在楼下的餐馆里，其他城市的酒店里，你朋友的家里访问到这些服务
 
 这时候就可以使用 [ZeroTier](https://www.zerotier.com) 来构建一个虚拟局域网
+
+在国内环境下这种方案也可以降低一定的搭建个人信息平台时的法律风险
 
 <!-- more -->
 >当然，也可以反过来访问这些设备，这是个局域网
@@ -28,7 +28,11 @@ ZeroTier可以说只有一个功能，就是将设备添加到另一个由ZeroTi
 >
 >不是路由器也行，但配置很麻烦，这里不展开讲
 
->关于为什么违法可以搜索ICP备案这个东西
+>关于国内ICP备案相关的信息我知道的不多
+>
+>这种方式只是避免直接打开公网端口，降低一定的法律风险的同时封锁公网直接扫描的可能性
+>
+>如果需要对公网部署还请购买云服务器，ICP备案针对的是服务器
 
 # 理论
 
@@ -39,7 +43,17 @@ ZeroTier可以说只有一个功能，就是将设备添加到另一个由ZeroTi
 ipv4与ipv6
 ---
 
-当客户端连接到ZeroTier网络时，客户端会将自己的ip上传到服务器上
+当客户端连接到planet时，客户端与planet会协商出一个与客户端IP对应的ID
+
+ID在客户端运行
+```sh
+zerotier-cli info
+```
+时会被输出出来
+```
+200 info 1234567890 1.14.2 ONLINE
+```
+>请求状态码 操作 ID 版本 状态
 
 在其他客户端尝试连接的时候，会先尝试是否能使用ip直连
 
@@ -82,13 +96,13 @@ ipv4与ipv6
 
 >planet和moon最前面的视频有讲，我不重复
 
->以下是我的理解，请注意辨别
-
 半自部署最大的好处是没有官方网络控制器的设备数和网络数上限，并不会有安全性的提升
 
-因为连接的planet服务器依旧是别人的，在连接网络时使用的是节点id+网络id的格式
+因为连接的planet服务器依旧是别人的，在连接网络时使用的是 **节点id+网络id** 的格式
 
 而节点id是由planet服务器分发的，理论上planet可以把你导向另外的控制器
+
+>个人理解，总之就是planet上运行的代码不透明，你在使用ZeroTier的服务时请确认你信任ZeroTier官方
 
 网络控制器控制着几乎所有的ZeroTier功能，比如IP分配，路由表和DNS配置下发
 
@@ -102,25 +116,27 @@ ZeroTier的客户端本身就拥有成为网络控制器的能力
 
 只要部署 [ztncui](https://github.com/key-networks/ztncui) 就行
 
-详细看下方实操
+详细看下方实操章节
 
 全自部署
 ---
 全自部署和半自部署的区别就是直接部署了自己的planet服务器
 
-这样所有的数据和权限都在自己手里
+这样你可以看到所有你正在运行的代码，并且所有的数据和权限都在自己手里
 
 这是社区制作的一键部署包 [docker-zerotier-planet](https://github.com/xubiaolin/docker-zerotier-planet)
 
-他会同时部署planet服务器，moon服务器，网络控制器管理界面 [ztncui](https://github.com/key-networks/ztncui)
+他会同时部署planet服务器，moon服务器，网络控制器管理界面 [ztncui](https://github.com/key-networks/ztncui)，以及官方客户端
 
 但这个方案服务器ip变动时就需要进行重新搭建，并且需要暴露端口
 
-既然都暴露端口了，在我的情况下不如直接配置 [ddns-go](https://github.com/jeessy2/ddns-go) ，解析到公网ipv6
+既然都暴露端口了，在我的情况下不如直接配置 [ddns-go](https://github.com/jeessy2/ddns-go) ，解析到公网ipv6直接从公网连接到服务器
 
 或许你可以通过调整云服务商提供的防火墙来避开法律风险？
 
-比如每隔一段时间检查本机IP地址，然后仅允许本机IP地址通过？
+比如每隔一段时间检查节点IP地址，然后仅允许所有节点的IP地址通过？
+
+>不知道这种情况ICP备案的时候网站用途要填什么哈哈
 
 这个方案没什么好讲的，下载下来一键启动就行
 # 实操
@@ -131,20 +147,20 @@ ZeroTier的客户端本身就拥有成为网络控制器的能力
 
 ztncui
 ---
->注意，ztncui的Github仓库上次更新时间是2年前
+>注意，ztncui的Github仓库上次更新时间是 [2023.8.31](https://github.com/key-networks/ztncui/commit/1b2284864de48d2dcae22582fff122fe24909c3d)
 
-我这里提供Docker的部署方法，因为我的环境不方便使用npm
+我这里提供Docker的部署方法，因为我的环境不方便直接安装npm
 
 ```Dockerfile
 FROM node:23-alpine AS builder
 
-RUN apk add --no-cache git python3 build-base && \
-    git clone --branch master --single-branch --depth 1 https://github.com/key-networks/ztncui.git
+RUN apk add --no-cache git python3 build-base \
+    && git clone --branch master --single-branch --depth 1 https://github.com/key-networks/ztncui.git
 
 WORKDIR /ztncui/src
 
-RUN npm -g install node-gyp && \
-    npm install
+RUN npm -g install node-gyp \
+    && npm install
 
 FROM node:23-alpine
 
@@ -167,9 +183,9 @@ services:
       - ./passwd:/ztncui/src/etc/passwd
       - /var/lib/zerotier-one/authtoken.secret:/var/lib/zerotier-one/authtoken.secret
 ```
->这两个文件一个是web面板的用户密码，一个是ZeroTier的访问密钥
+>这两个文件一个是web面板的用户密码，一个是ZeroTier客户端的访问密钥
 >
->默认端口 `3000`，能改
+>默认端口 `3000`，能用 `HTTP_PORT=3456` 改
 >
 >`HTTP_ALL_INTERFACES` 意思是任何ip地址都能访问，方便nginx反向代理
 >
@@ -183,7 +199,7 @@ services:
 
 DNS
 ---
-ZeroTier虽然不需要去在意节点本身的ip地址，但连接其他节点时使用的还是内网ip地址
+ZeroTier虽然不需要去在意节点本身的ip地址，但连接其他节点时使用的还是虚拟内网中的ip地址
 
 如果不想记忆ip地址，想使用域名访问服务器的话，在web面板里有一个DNS配置
 
@@ -191,20 +207,18 @@ ZeroTier虽然不需要去在意节点本身的ip地址，但连接其他节点�
 
 Search Domain里填写你想要解析的域名，再在Server Address里填写DNS服务器的ip就可以
 
-根据我的经验，比如你想访问 `123.zt` 或 `www.123.zt` ，那么你就可以填写 `zt` 或 `123.zt`
+如果你想访问 `123.zt` 或 `www.123.zt` ，那么你就可以填写 `zt` 或 `123.zt`
 
-填写 `zt` 时效果类似 `*.*.zt`，我没有详细测试
+因为我有一台openwrt软路由，使用的默认的DNS服务器 `Dnsmasq`
 
-因为我有一台openwrt软路由，所以没有部署过DNS服务器，你可以自己找一找
+所以我没有自己部署过DNS服务器，你需要自己部署一个
 
->似乎只能同时解析一个顶级域名，但我在测试时是可以解析两个顶级域名的
->
->我的网络环境比较复杂，有时间的可以自己试试
+>官方控制器一个Server只能同时对应一个Search Domain
 
 >其实还有很多方案，比如
 >- 买个域名然后解析到ZeroTier内网地址
->- hosts文件
->- 本地DNS
+>- 分发hosts文件
+>- 修改本地DNS配置
 
 局域网联机
 ---
@@ -265,7 +279,7 @@ Windows的长这样
 
 Docker部署
 ---
-我认为一般用户没必要看这个，这个栏目本身其实是我在摸索的时候走歪的一条路
+我认为一般用户没必要看这个，这个东西本身其实是我在摸索的时候走歪的一条路
 
 一般来说直接安装官方包就行
 
@@ -275,7 +289,7 @@ Docker部署
 - 部署 [官方镜像](https://hub.docker.com/r/zerotier/zerotier)
 - 在Debian镜像下安装官方包
 - 在Alpine镜像下自行编译源码
->Alpine本来似乎是有官方包的，后来被撤了
+>Alpine似乎本来是有官方包的，后来被撤了
 
 第一条路我死活跑不起来，第二条路镜像体积太大
 
@@ -284,12 +298,12 @@ Docker部署
 ```Dockerfile
 FROM alpine:latest AS builder
 
-RUN apk add --no-cache curl git make linux-headers openssl-dev pkgconf gcc g++ && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
-    source "$HOME/.cargo/env" && \
-    git clone --branch main --single-branch --depth 1 https://github.com/zerotier/ZeroTierOne.git && \
-    cd ZeroTierOne && \
-    make -j
+RUN apk add --no-cache curl git make linux-headers openssl-dev pkgconf gcc g++ \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+    && source "$HOME/.cargo/env" \
+    && git clone --branch main --single-branch --depth 1 https://github.com/zerotier/ZeroTierOne.git \
+    && cd ZeroTierOne \
+    && make -j
 
 FROM alpine:latest
 
@@ -318,7 +332,7 @@ services:
 
 以及我给了这个容器privileged权限，不喜欢的可以自己试试
 
-顺带一提，我现在用的是OpenWrt软件库里的包
+顺带一提，我现在用的是OpenWrt仓库里的软件包
 
 # 结语
 这套方案适合不敢直接开端口到公网的人，也适合朋友之间联机用
@@ -329,14 +343,14 @@ ZeroTier有一个竞品 [TailScale](https://tailscale.com/)，可以看看这个
 
 目前看来对于普通用户来说这玩意比ZeroTier更好，更新更勤，协议更透明，全平台支持更好
 
-也不是没有缺点，不能自定义IP，强制注册账号，限制死的用户数和设备数
+也不是没有缺点，限制自定义IP，强制登录账号的同时必须使用第三方平台账号，限制死的用户数和设备数
 >但是免费套餐对于个人用户来说足够了
 
 之后可能会拎出来单独讲讲
 
 有的人可能不喜欢中心化的模式，有一个开源的去中心化的类似项目 [EasyTier](https://easytier.cn/)
 
-这两个项目都使用到了 [WireGuard](https://www.wireguard.com/) 作为协议，如果直接使用WireGuard的话需要开放防火墙端口到公网
+这两个项目都使用到了 [WireGuard](https://www.wireguard.com/) 作为协议，如果直接使用WireGuard的话需要开放端口到公网
 
 ZeroTier使用的是自己的协议，但这并不代表ZeroTier好过其他产品，这方面我没有能力评价
 
@@ -348,4 +362,4 @@ ZeroTier使用的是自己的协议，但这并不代表ZeroTier好过其他产�
 
 我很感谢他们，希望我也能帮助到你
 
-总之我写了这篇文章，如果有帮到你或者你有什么需要补充的，可以点 [这里](https://blog.jinenze.xyz/about/about.html)
+总之我写了这篇文章，如果有帮到你或者你有什么需要补充的，可以给我发个邮件提个issue什么的
