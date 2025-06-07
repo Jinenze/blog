@@ -18,21 +18,21 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.jinenze.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.jinenze.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.23.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="前言 以下内容仅适用于ZeroTier1.14   我没有阅读过源码，请注意辨别  ZeroTier可以说只有一个功能，就是将设备添加到另一个由ZeroTier控制的虚拟局域网 虽然简单，但十分强大 在国内环境下这也是合法访问个人信息平台的较为简单的方式 比如在你的家庭服务器上部署的个人网盘，密码托管，即时通讯，游戏服务器这样的服务 当你想让在其他城市的酒店里的设备，服务器机房里的设备，远在天边的">
+    <meta name="description" content="前言 以下内容仅适用于ZeroTier1.14   我没有阅读过源码，请注意辨别  ZeroTier可以将设备添加至一个由ZeroTier网络控制器控制的虚拟局域网 通过中央服务器的协调来进行节点间的直连 当你在你的家庭服务器上部署了个人网盘，密码托管，即时通讯，游戏服务器这样的服务时 想在楼下的餐馆里，其他城市的酒店里，你朋友的家里访问到这些服务 这时候就可以使用 ZeroTier 来构建一个虚">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于使用ZeroTier进行异地组网">
 <meta property="og:url" content="https://blog.jinenze.xyz/zh-CN/2025/AboutZeroTier/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="前言 以下内容仅适用于ZeroTier1.14   我没有阅读过源码，请注意辨别  ZeroTier可以说只有一个功能，就是将设备添加到另一个由ZeroTier控制的虚拟局域网 虽然简单，但十分强大 在国内环境下这也是合法访问个人信息平台的较为简单的方式 比如在你的家庭服务器上部署的个人网盘，密码托管，即时通讯，游戏服务器这样的服务 当你想让在其他城市的酒店里的设备，服务器机房里的设备，远在天边的">
+<meta property="og:description" content="前言 以下内容仅适用于ZeroTier1.14   我没有阅读过源码，请注意辨别  ZeroTier可以将设备添加至一个由ZeroTier网络控制器控制的虚拟局域网 通过中央服务器的协调来进行节点间的直连 当你在你的家庭服务器上部署了个人网盘，密码托管，即时通讯，游戏服务器这样的服务时 想在楼下的餐馆里，其他城市的酒店里，你朋友的家里访问到这些服务 这时候就可以使用 ZeroTier 来构建一个虚">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://blog.jinenze.xyz/images/ZTDNS.png">
 <meta property="og:image" content="https://blog.jinenze.xyz/images/ZTRoutes.png">
 <meta property="og:image" content="https://blog.jinenze.xyz/images/ZTWindowsConfig.png">
 <meta property="og:image" content="https://blog.jinenze.xyz/images/ZTAndroidConfig.png">
-<meta property="article:published_time" content="2025-04-27T15:08:15.624Z">
-<meta property="article:modified_time" content="2025-04-27T15:08:15.624Z">
+<meta property="article:published_time" content="2025-06-07T14:54:07.404Z">
+<meta property="article:modified_time" content="2025-06-07T14:54:07.404Z">
 <meta property="article:author" content="Jinenze">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://blog.jinenze.xyz/images/ZTDNS.png">
@@ -243,7 +243,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2025-04-27 15:08:15" itemprop="dateCreated datePublished" datetime="2025-04-27T15:08:15+00:00">2025-04-27</time>
+      <time title="创建时间：2025-06-07 14:54:07" itemprop="dateCreated datePublished" datetime="2025-06-07T14:54:07+00:00">2025-06-07</time>
     </span>
 
   
@@ -261,12 +261,12 @@
 <blockquote>
 <p>我没有阅读过源码，请注意辨别</p>
 </blockquote>
-<p>ZeroTier可以说只有一个功能，就是将设备添加到另一个由ZeroTier控制的虚拟局域网</p>
-<p>虽然简单，但十分强大</p>
-<p>在国内环境下这也是合法访问个人信息平台的较为简单的方式</p>
-<p>比如在你的家庭服务器上部署的个人网盘，密码托管，即时通讯，游戏服务器这样的服务</p>
-<p>当你想让在其他城市的酒店里的设备，服务器机房里的设备，远在天边的其他人的设备访问到这些服务</p>
+<p>ZeroTier可以将设备添加至一个由ZeroTier网络控制器控制的虚拟局域网</p>
+<p>通过中央服务器的协调来进行节点间的直连</p>
+<p>当你在你的家庭服务器上部署了个人网盘，密码托管，即时通讯，游戏服务器这样的服务时</p>
+<p>想在楼下的餐馆里，其他城市的酒店里，你朋友的家里访问到这些服务</p>
 <p>这时候就可以使用 <a target="_blank" rel="noopener" href="https://www.zerotier.com/">ZeroTier</a> 来构建一个虚拟局域网</p>
+<p>在国内环境下这种方案也可以降低一定的搭建个人信息平台时的法律风险</p>
 <span id="more"></span>
 <blockquote>
 <p>当然，也可以反过来访问这些设备，这是个局域网</p>
@@ -275,11 +275,20 @@
 <p>不是路由器也行，但配置很麻烦，这里不展开讲</p>
 </blockquote>
 <blockquote>
-<p>关于为什么违法可以搜索ICP备案这个东西</p>
+<p>关于国内ICP备案相关的信息我知道的不多</p>
+<p>这种方式只是避免直接打开公网端口，降低一定的法律风险的同时封锁公网直接扫描的可能性</p>
+<p>如果需要对公网部署还请购买云服务器，ICP备案针对的是服务器</p>
 </blockquote>
 <h1 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h1><p>这个视频给了我很大帮助，我尽量不重复讲里面已经有的内容</p>
 <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1oL411Y7pB">这么良心的开源、内网穿透工具ZeroTier，为啥到你手就不好用了？</a></p>
-<h2 id="ipv4与ipv6"><a href="#ipv4与ipv6" class="headerlink" title="ipv4与ipv6"></a>ipv4与ipv6</h2><p>当客户端连接到ZeroTier网络时，客户端会将自己的ip上传到服务器上</p>
+<h2 id="ipv4与ipv6"><a href="#ipv4与ipv6" class="headerlink" title="ipv4与ipv6"></a>ipv4与ipv6</h2><p>当客户端连接到planet时，客户端与planet会协商出一个与客户端IP对应的ID</p>
+<p>ID在客户端运行</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zerotier-cli info</span><br></pre></td></tr></table></figure>
+<p>时会被输出出来</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">200 info 1234567890 1.14.2 ONLINE</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>请求状态码 操作 ID 版本 状态</p>
+</blockquote>
 <p>在其他客户端尝试连接的时候，会先尝试是否能使用ip直连</p>
 <p>如果不能直连，会进入中继模式</p>
 <p>不能直连的原因基本都是因为 <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%BD%91%E7%BB%9C%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2">NAT</a> 造成的</p>
@@ -306,62 +315,64 @@
 <blockquote>
 <p>planet和moon最前面的视频有讲，我不重复</p>
 </blockquote>
-<blockquote>
-<p>以下是我的理解，请注意辨别</p>
-</blockquote>
 <p>半自部署最大的好处是没有官方网络控制器的设备数和网络数上限，并不会有安全性的提升</p>
-<p>因为连接的planet服务器依旧是别人的，在连接网络时使用的是节点id+网络id的格式</p>
+<p>因为连接的planet服务器依旧是别人的，在连接网络时使用的是 <strong>节点id+网络id</strong> 的格式</p>
 <p>而节点id是由planet服务器分发的，理论上planet可以把你导向另外的控制器</p>
+<blockquote>
+<p>个人理解，总之就是planet上运行的代码不透明，你在使用ZeroTier的服务时请确认你信任ZeroTier官方</p>
+</blockquote>
 <p>网络控制器控制着几乎所有的ZeroTier功能，比如IP分配，路由表和DNS配置下发</p>
 <p>ZeroTier的客户端本身就拥有成为网络控制器的能力</p>
 <p>你可以把他部署在一个始终在线的节点上，比如你家路由器</p>
 <p>在连接到官方的管理界面 <a target="_blank" rel="noopener" href="https://my.zerotier.com/">https://my.zerotier.com</a> 时，实际上就是连接到了官方分配给你的节点上的界面</p>
 <p>我在这个方案上花了很多时间，最后发现其实挺简单</p>
 <p>只要部署 <a target="_blank" rel="noopener" href="https://github.com/key-networks/ztncui">ztncui</a> 就行</p>
-<p>详细看下方实操</p>
+<p>详细看下方实操章节</p>
 <h2 id="全自部署"><a href="#全自部署" class="headerlink" title="全自部署"></a>全自部署</h2><p>全自部署和半自部署的区别就是直接部署了自己的planet服务器</p>
-<p>这样所有的数据和权限都在自己手里</p>
+<p>这样你可以看到所有你正在运行的代码，并且所有的数据和权限都在自己手里</p>
 <p>这是社区制作的一键部署包 <a target="_blank" rel="noopener" href="https://github.com/xubiaolin/docker-zerotier-planet">docker-zerotier-planet</a></p>
-<p>他会同时部署planet服务器，moon服务器，网络控制器管理界面 <a target="_blank" rel="noopener" href="https://github.com/key-networks/ztncui">ztncui</a></p>
+<p>他会同时部署planet服务器，moon服务器，网络控制器管理界面 <a target="_blank" rel="noopener" href="https://github.com/key-networks/ztncui">ztncui</a>，以及官方客户端</p>
 <p>但这个方案服务器ip变动时就需要进行重新搭建，并且需要暴露端口</p>
-<p>既然都暴露端口了，在我的情况下不如直接配置 <a target="_blank" rel="noopener" href="https://github.com/jeessy2/ddns-go">ddns-go</a> ，解析到公网ipv6</p>
+<p>既然都暴露端口了，在我的情况下不如直接配置 <a target="_blank" rel="noopener" href="https://github.com/jeessy2/ddns-go">ddns-go</a> ，解析到公网ipv6直接从公网连接到服务器</p>
 <p>或许你可以通过调整云服务商提供的防火墙来避开法律风险？</p>
-<p>比如每隔一段时间检查本机IP地址，然后仅允许本机IP地址通过？</p>
+<p>比如每隔一段时间检查节点IP地址，然后仅允许所有节点的IP地址通过？</p>
+<blockquote>
+<p>不知道这种情况ICP备案的时候网站用途要填什么哈哈</p>
+</blockquote>
 <p>这个方案没什么好讲的，下载下来一键启动就行</p>
 <h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><p>也是同一个人的视频，我只做补充，以下内容全部使用官方网络控制器</p>
 <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Vh411F7Mr">内网穿透工具ZeroTier，从简单到复杂的玩法，无保留，一期全放送</a></p>
 <h2 id="ztncui"><a href="#ztncui" class="headerlink" title="ztncui"></a>ztncui</h2><blockquote>
-<p>注意，ztncui的Github仓库上次更新时间是2年前</p>
+<p>注意，ztncui的Github仓库上次更新时间是 <a target="_blank" rel="noopener" href="https://github.com/key-networks/ztncui/commit/1b2284864de48d2dcae22582fff122fe24909c3d">2023.8.31</a></p>
 </blockquote>
-<p>我这里提供Docker的部署方法，因为我的环境不方便使用npm</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:<span class="number">23</span>-alpine AS builder</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apk add --no-cache git python3 build-base &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    git <span class="built_in">clone</span> --branch master --single-branch --depth 1 https://github.com/key-networks/ztncui.git</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /ztncui/src</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> npm -g install node-gyp &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    npm install</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> node:<span class="number">23</span>-alpine</span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder /ztncui /ztncui</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /ztncui/src</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;npm&quot;</span>,<span class="string">&quot;start&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<p>我这里提供Docker的部署方法，因为我的环境不方便直接安装npm</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:<span class="number">23</span>-alpine AS builder</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apk add --no-cache git python3 build-base \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; git <span class="built_in">clone</span> --branch master --single-branch --depth 1 https://github.com/key-networks/ztncui.git</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /ztncui/src</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> npm -g install node-gyp \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; npm install</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> node:<span class="number">23</span>-alpine</span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder /ztncui /ztncui</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /ztncui/src</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;npm&quot;</span>,<span class="string">&quot;start&quot;</span>]</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">ztncui:</span></span><br><span class="line">    <span class="attr">build:</span> <span class="string">.</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">ztncui</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">HTTP_ALL_INTERFACES=yes</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./passwd:/ztncui/src/etc/passwd</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/lib/zerotier-one/authtoken.secret:/var/lib/zerotier-one/authtoken.secret</span></span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>这两个文件一个是web面板的用户密码，一个是ZeroTier的访问密钥</p>
-<p>默认端口 <code>3000</code>，能改</p>
+<p>这两个文件一个是web面板的用户密码，一个是ZeroTier客户端的访问密钥</p>
+<p>默认端口 <code>3000</code>，能用 <code>HTTP_PORT=3456</code> 改</p>
 <p><code>HTTP_ALL_INTERFACES</code> 意思是任何ip地址都能访问，方便nginx反向代理</p>
 <p>详细设置请看官方仓库 <a target="_blank" rel="noopener" href="https://github.com/key-networks/ztncui">ztncui</a></p>
 </blockquote>
 <p>所有功能都是官方客户端实现的，所以配置文件只有密码</p>
 <p>启动后打开网页点左上角的 <code>Add network</code> 就可以添加网络</p>
 <p>少量设备其实没必要使用这个功能，而且在我的情况下必须先连接到网络才能打开管理面板</p>
-<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><p>ZeroTier虽然不需要去在意节点本身的ip地址，但连接其他节点时使用的还是内网ip地址</p>
+<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><p>ZeroTier虽然不需要去在意节点本身的ip地址，但连接其他节点时使用的还是虚拟内网中的ip地址</p>
 <p>如果不想记忆ip地址，想使用域名访问服务器的话，在web面板里有一个DNS配置</p>
 <p><img src="/images/ZTDNS.png" alt="DNS"></p>
 <p>Search Domain里填写你想要解析的域名，再在Server Address里填写DNS服务器的ip就可以</p>
-<p>根据我的经验，比如你想访问 <code>123.zt</code> 或 <code>www.123.zt</code> ，那么你就可以填写 <code>zt</code> 或 <code>123.zt</code></p>
-<p>填写 <code>zt</code> 时效果类似 <code>*.*.zt</code>，我没有详细测试</p>
-<p>因为我有一台openwrt软路由，所以没有部署过DNS服务器，你可以自己找一找</p>
+<p>如果你想访问 <code>123.zt</code> 或 <code>www.123.zt</code> ，那么你就可以填写 <code>zt</code> 或 <code>123.zt</code></p>
+<p>因为我有一台openwrt软路由，使用的默认的DNS服务器 <code>Dnsmasq</code></p>
+<p>所以我没有自己部署过DNS服务器，你需要自己部署一个</p>
 <blockquote>
-<p>似乎只能同时解析一个顶级域名，但我在测试时是可以解析两个顶级域名的</p>
-<p>我的网络环境比较复杂，有时间的可以自己试试</p>
+<p>官方控制器一个Server只能同时对应一个Search Domain</p>
 </blockquote>
 <blockquote>
 <p>其实还有很多方案，比如</p>
 <ul>
 <li>买个域名然后解析到ZeroTier内网地址</li>
-<li>hosts文件</li>
-<li>本地DNS</li>
+<li>分发hosts文件</li>
+<li>修改本地DNS配置</li>
 </ul>
 </blockquote>
 <h2 id="局域网联机"><a href="#局域网联机" class="headerlink" title="局域网联机"></a>局域网联机</h2><p>在使用ZeroTier进行局域网联机时有时不能发现其他设备，可以尝试调整 <a target="_blank" rel="noopener" href="https://www.techkoala.net/windows_10_network_priority/">Windows 网络连接优先级设置</a></p>
@@ -410,7 +421,7 @@
 <p>此配置中，<code>allowDefault: true</code>允许将<code>10.147.17.1</code>设为默认网关，所有非本地流量通过该节点转发。</p>
 <p>总之，<code>allowDefault</code>的命名直观反映了其核心功能：<strong>允许（Allow）ZeroTier接管系统的默认（Default）路由</strong>，这一设计既符合技术术语，也遵循了软件配置的常见命名规范。</p>
 </blockquote>
-<h2 id="Docker部署"><a href="#Docker部署" class="headerlink" title="Docker部署"></a>Docker部署</h2><p>我认为一般用户没必要看这个，这个栏目本身其实是我在摸索的时候走歪的一条路</p>
+<h2 id="Docker部署"><a href="#Docker部署" class="headerlink" title="Docker部署"></a>Docker部署</h2><p>我认为一般用户没必要看这个，这个东西本身其实是我在摸索的时候走歪的一条路</p>
 <p>一般来说直接安装官方包就行</p>
 <p>如果实在不行，可以继续看</p>
 <p>在Docker下安装有三条路</p>
@@ -418,35 +429,35 @@
 <li>部署 <a target="_blank" rel="noopener" href="https://hub.docker.com/r/zerotier/zerotier">官方镜像</a></li>
 <li>在Debian镜像下安装官方包</li>
 <li>在Alpine镜像下自行编译源码<blockquote>
-<p>Alpine本来似乎是有官方包的，后来被撤了</p>
+<p>Alpine似乎本来是有官方包的，后来被撤了</p>
 </blockquote>
 </li>
 </ul>
 <p>第一条路我死活跑不起来，第二条路镜像体积太大</p>
 <p>下面是我摸索很久走出来的第三条路</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> alpine:latest AS builder</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apk add --no-cache curl git make linux-headers openssl-dev pkgconf gcc g++ &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    curl --proto <span class="string">&#x27;=https&#x27;</span> --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">source</span> <span class="string">&quot;<span class="variable">$HOME</span>/.cargo/env&quot;</span> &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    git <span class="built_in">clone</span> --branch main --single-branch --depth 1 https://github.com/zerotier/ZeroTierOne.git &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">cd</span> ZeroTierOne &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    make -j</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> alpine:latest</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apk add --no-cache libstdc++ gcompat openssl libgcc</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder /ZeroTierOne/zerotier-one /usr/sbin/zerotier-one</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder /ZeroTierOne/zerotier-cli /usr/sbin/zerotier-cli</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;zerotier-one&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> alpine:latest AS builder</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apk add --no-cache curl git make linux-headers openssl-dev pkgconf gcc g++ \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; curl --proto <span class="string">&#x27;=https&#x27;</span> --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">source</span> <span class="string">&quot;<span class="variable">$HOME</span>/.cargo/env&quot;</span> \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; git <span class="built_in">clone</span> --branch main --single-branch --depth 1 https://github.com/zerotier/ZeroTierOne.git \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">cd</span> ZeroTierOne \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; make -j</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> alpine:latest</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apk add --no-cache libstdc++ gcompat openssl libgcc</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder /ZeroTierOne/zerotier-one /usr/sbin/zerotier-one</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder /ZeroTierOne/zerotier-cli /usr/sbin/zerotier-cli</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;zerotier-one&quot;</span>]</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">zerotier:</span></span><br><span class="line">    <span class="attr">build:</span> <span class="string">.</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">zerotier</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./data:/var/lib/zerotier-one</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/dev/net/tun:/dev/net/tun</span></span><br><span class="line">    <span class="attr">privileged:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 <p>构建镜像时的CPU需求量很高，记得放在主力机上构建</p>
 <p>这是我试出来的最小配置，不嫌烦的可以自己试试</p>
 <p>以及我给了这个容器privileged权限，不喜欢的可以自己试试</p>
-<p>顺带一提，我现在用的是OpenWrt软件库里的包</p>
+<p>顺带一提，我现在用的是OpenWrt仓库里的软件包</p>
 <h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>这套方案适合不敢直接开端口到公网的人，也适合朋友之间联机用</p>
 <p>我是在很久之前就发现了ZeroTier这样的软件，但直到最近才真正搞懂他是怎么运行的</p>
 <p>ZeroTier有一个竞品 <a target="_blank" rel="noopener" href="https://tailscale.com/">TailScale</a>，可以看看这个视频 <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV13P411q7Cy">能与ZeroTier齐名的内网穿透工具Tailscale，比ZeroTier还好用？</a></p>
 <p>目前看来对于普通用户来说这玩意比ZeroTier更好，更新更勤，协议更透明，全平台支持更好</p>
-<p>也不是没有缺点，不能自定义IP，强制注册账号，限制死的用户数和设备数</p>
+<p>也不是没有缺点，限制自定义IP，强制登录账号的同时必须使用第三方平台账号，限制死的用户数和设备数</p>
 <blockquote>
 <p>但是免费套餐对于个人用户来说足够了</p>
 </blockquote>
 <p>之后可能会拎出来单独讲讲</p>
 <p>有的人可能不喜欢中心化的模式，有一个开源的去中心化的类似项目 <a target="_blank" rel="noopener" href="https://easytier.cn/">EasyTier</a></p>
-<p>这两个项目都使用到了 <a target="_blank" rel="noopener" href="https://www.wireguard.com/">WireGuard</a> 作为协议，如果直接使用WireGuard的话需要开放防火墙端口到公网</p>
+<p>这两个项目都使用到了 <a target="_blank" rel="noopener" href="https://www.wireguard.com/">WireGuard</a> 作为协议，如果直接使用WireGuard的话需要开放端口到公网</p>
 <p>ZeroTier使用的是自己的协议，但这并不代表ZeroTier好过其他产品，这方面我没有能力评价</p>
 <p>目前这套解决方案对于我来说已经足够了，所以我没有仔细研究过其他的解决方案</p>
 <p>虽然东西看上去不多，但是折磨了我很久，我没能找到一篇能从头到尾给我讲明白的文章</p>
 <p>这篇文章也引用了很多别人的东西，我不觉得我能讲得比别人好</p>
 <p>我很感谢他们，希望我也能帮助到你</p>
-<p>总之我写了这篇文章，如果有帮到你或者你有什么需要补充的，可以点 <a href="https://blog.jinenze.xyz/about/about.html">这里</a></p>
+<p>总之我写了这篇文章，如果有帮到你或者你有什么需要补充的，可以给我发个邮件提个issue什么的</p>
 
     </div>
 
@@ -477,13 +488,10 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/zh-CN/2025/AboutHexo/" rel="prev" title="关于Hexo在Github Pages上的搭建">
-                  <i class="fa fa-angle-left"></i> 关于Hexo在Github Pages上的搭建
-                </a>
             </div>
             <div class="post-nav-item">
-                <a href="/zh-CN/2025/AboutDockerfile/" rel="next" title="关于Dockerfile">
-                  关于Dockerfile <i class="fa fa-angle-right"></i>
+                <a href="/zh-CN/2025/AboutHexo/" rel="next" title="关于Hexo在Github Pages上的搭建">
+                  关于Hexo在Github Pages上的搭建 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
