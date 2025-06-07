@@ -1,6 +1,8 @@
 ---
 title: 关于Hexo在Github Pages上的搭建
 lang: zh-CN
+date: "2025/04/07"
+updated: "2025/04/27"
 ---
 记录一下我在Github Page上搭建Hexo的过程
 

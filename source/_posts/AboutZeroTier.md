@@ -1,6 +1,8 @@
 ---
 title: 关于使用ZeroTier进行异地组网
 lang: zh-CN
+date: "2025/04/05"
+updated: "2025/06/07"
 ---
 # 前言
 >以下内容仅适用于ZeroTier1.14
