@@ -18,33 +18,33 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.jinenze.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.23.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.jinenze.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="前言 以下内容仅适用于ZeroTier1.14   我没有阅读过源码，请注意辨别  ZeroTier可以将设备添加至一个由ZeroTier网络控制器控制的虚拟局域网 通过中央服务器的协调来进行节点间的直连 当你在你的家庭服务器上部署了个人网盘，密码托管，即时通讯，游戏服务器这样的服务时 想在楼下的餐馆里，其他城市的酒店里，你朋友的家里访问到这些服务 这时候就可以使用 ZeroTier 来构建一个虚">
+    <meta name="description" content="前言 以下内容仅适用于 ZeroTier 1.14  ZeroTier 可以将设备添加至一个由 ZeroTier 网络控制器控制的虚拟局域网 通过协调服务器的协调来进行节点间的直连 当你在你的家庭服务器上部署了个人网盘&#x2F;密码托管&#x2F;即时通讯&#x2F;游戏服务器这样的服务时 想在楼下的餐馆里，其他城市的酒店里，你朋友的家里安全地访问到这些服务 这时候就可以使用 ZeroTier">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于使用ZeroTier进行异地组网">
+<meta property="og:title" content="关于使用 ZeroTier 进行异地组网">
 <meta property="og:url" content="https://blog.jinenze.xyz/zh-CN/2025/AboutZeroTier/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="前言 以下内容仅适用于ZeroTier1.14   我没有阅读过源码，请注意辨别  ZeroTier可以将设备添加至一个由ZeroTier网络控制器控制的虚拟局域网 通过中央服务器的协调来进行节点间的直连 当你在你的家庭服务器上部署了个人网盘，密码托管，即时通讯，游戏服务器这样的服务时 想在楼下的餐馆里，其他城市的酒店里，你朋友的家里访问到这些服务 这时候就可以使用 ZeroTier 来构建一个虚">
+<meta property="og:description" content="前言 以下内容仅适用于 ZeroTier 1.14  ZeroTier 可以将设备添加至一个由 ZeroTier 网络控制器控制的虚拟局域网 通过协调服务器的协调来进行节点间的直连 当你在你的家庭服务器上部署了个人网盘&#x2F;密码托管&#x2F;即时通讯&#x2F;游戏服务器这样的服务时 想在楼下的餐馆里，其他城市的酒店里，你朋友的家里安全地访问到这些服务 这时候就可以使用 ZeroTier">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog.jinenze.xyz/images/ZTDNS.png">
-<meta property="og:image" content="https://blog.jinenze.xyz/images/ZTRoutes.png">
-<meta property="og:image" content="https://blog.jinenze.xyz/images/ZTWindowsConfig.png">
-<meta property="og:image" content="https://blog.jinenze.xyz/images/ZTAndroidConfig.png">
+<meta property="og:image" content="https://blog.jinenze.xyz/images/ZTDNS.webp">
+<meta property="og:image" content="https://blog.jinenze.xyz/images/ZTRoutes.webp">
+<meta property="og:image" content="https://blog.jinenze.xyz/images/ZTWindowsConfig.webp">
+<meta property="og:image" content="https://blog.jinenze.xyz/images/ZTAndroidConfig.webp">
 <meta property="article:published_time" content="2025-04-05T00:00:00.000Z">
-<meta property="article:modified_time" content="2025-06-07T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-08-04T00:00:00.000Z">
 <meta property="article:author" content="Jinenze">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog.jinenze.xyz/images/ZTDNS.png">
+<meta name="twitter:image" content="https://blog.jinenze.xyz/images/ZTDNS.webp">
 
 
 <link rel="canonical" href="https://blog.jinenze.xyz/zh-CN/2025/AboutZeroTier/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.jinenze.xyz/zh-CN/2025/AboutZeroTier/","path":"zh-CN/2025/AboutZeroTier/","title":"关于使用ZeroTier进行异地组网"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.jinenze.xyz/zh-CN/2025/AboutZeroTier/","path":"zh-CN/2025/AboutZeroTier/","title":"关于使用 ZeroTier 进行异地组网"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>关于使用ZeroTier进行异地组网 | Blog</title>
+<title>关于使用 ZeroTier 进行异地组网 | Blog</title>
   
 
 
@@ -58,7 +58,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
 <script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
 <script src="/js/third-party/search/local-search.js" defer></script>
 
 
@@ -162,7 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%90%86%E8%AE%BA"><span class="nav-number">2.</span> <span class="nav-text">理论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ipv4%E4%B8%8Eipv6"><span class="nav-number">2.1.</span> <span class="nav-text">ipv4与ipv6</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8A%E8%87%AA%E9%83%A8%E7%BD%B2"><span class="nav-number">2.2.</span> <span class="nav-text">半自部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E8%87%AA%E9%83%A8%E7%BD%B2"><span class="nav-number">2.3.</span> <span class="nav-text">全自部署</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E6%93%8D"><span class="nav-number">3.</span> <span class="nav-text">实操</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ztncui"><span class="nav-number">3.1.</span> <span class="nav-text">ztncui</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS"><span class="nav-number">3.2.</span> <span class="nav-text">DNS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%80%E5%9F%9F%E7%BD%91%E8%81%94%E6%9C%BA"><span class="nav-number">3.3.</span> <span class="nav-text">局域网联机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E8%B7%AF%E7%94%B1"><span class="nav-number">3.4.</span> <span class="nav-text">默认路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker%E9%83%A8%E7%BD%B2"><span class="nav-number">3.5.</span> <span class="nav-text">Docker部署</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">4.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%9C%B0%E7%BB%84%E7%BD%91"><span class="nav-number">1.1.</span> <span class="nav-text">异地组网</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E9%80%89%E6%8B%A9"><span class="nav-number">1.2.</span> <span class="nav-text">软件选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%90%86%E8%AE%BA"><span class="nav-number">2.</span> <span class="nav-text">理论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8A%E8%87%AA%E9%83%A8%E7%BD%B2"><span class="nav-number">2.1.</span> <span class="nav-text">半自部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E8%87%AA%E9%83%A8%E7%BD%B2"><span class="nav-number">2.2.</span> <span class="nav-text">全自部署</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E6%93%8D"><span class="nav-number">3.</span> <span class="nav-text">实操</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ztncui"><span class="nav-number">3.1.</span> <span class="nav-text">ztncui</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS"><span class="nav-number">3.2.</span> <span class="nav-text">DNS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%80%E5%9F%9F%E7%BD%91%E8%81%94%E6%9C%BA"><span class="nav-number">3.3.</span> <span class="nav-text">局域网联机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E8%B7%AF%E7%94%B1"><span class="nav-number">3.4.</span> <span class="nav-text">默认路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-%E9%83%A8%E7%BD%B2"><span class="nav-number">3.5.</span> <span class="nav-text">Docker 部署</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">4.</span> <span class="nav-text">结语</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -227,12 +227,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="关于使用ZeroTier进行异地组网 | Blog">
+      <meta itemprop="name" content="关于使用 ZeroTier 进行异地组网 | Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          关于使用ZeroTier进行异地组网
+          关于使用 ZeroTier 进行异地组网
         </h1>
 
         <div class="post-meta-container">
@@ -250,7 +250,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-06-07 00:00:00" itemprop="dateModified" datetime="2025-06-07T00:00:00+00:00">2025-06-07</time>
+      <time title="修改时间：2025-08-04 00:00:00" itemprop="dateModified" datetime="2025-08-04T00:00:00+00:00">2025-08-04</time>
     </span>
 
   
@@ -263,75 +263,57 @@
     
     
     <div class="post-body" itemprop="articleBody"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
-<p>以下内容仅适用于ZeroTier1.14</p>
+<p>以下内容仅适用于 ZeroTier 1.14</p>
 </blockquote>
-<blockquote>
-<p>我没有阅读过源码，请注意辨别</p>
-</blockquote>
-<p>ZeroTier可以将设备添加至一个由ZeroTier网络控制器控制的虚拟局域网</p>
-<p>通过中央服务器的协调来进行节点间的直连</p>
-<p>当你在你的家庭服务器上部署了个人网盘，密码托管，即时通讯，游戏服务器这样的服务时</p>
-<p>想在楼下的餐馆里，其他城市的酒店里，你朋友的家里访问到这些服务</p>
-<p>这时候就可以使用 <a target="_blank" rel="noopener" href="https://www.zerotier.com/">ZeroTier</a> 来构建一个虚拟局域网</p>
+<p>ZeroTier 可以将设备添加至一个由 ZeroTier 网络控制器控制的虚拟局域网</p>
+<p>通过协调服务器的协调来进行节点间的直连</p>
+<p>当你在你的家庭服务器上部署了个人网盘&#x2F;密码托管&#x2F;即时通讯&#x2F;游戏服务器这样的服务时</p>
+<p>想在楼下的餐馆里，其他城市的酒店里，你朋友的家里安全地访问到这些服务</p>
+<p>这时候就可以使用 ZeroTier 来构建一个虚拟局域网</p>
 <p>在国内环境下这种方案也可以降低一定的搭建个人信息平台时的法律风险</p>
 <span id="more"></span>
 <blockquote>
-<p>当然，也可以反过来访问这些设备，这是个局域网</p>
-<p>局域网的用处不止这些，比如你可以让虚拟局域网内的设备把所有网络请求发到虚拟局域网内的在你家里的路由器</p>
-<p>这样就可以在外面拥有在家里一样的网络环境了，所有经过公网的数据都由ZeroTier加密</p>
-<p>不是路由器也行，但配置很麻烦，这里不展开讲</p>
-</blockquote>
-<blockquote>
 <p>关于国内ICP备案相关的信息我知道的不多</p>
-<p>这种方式只是避免直接打开公网端口，降低一定的法律风险的同时封锁公网直接扫描的可能性</p>
+<p>这种方式只是避免直接打开公网端口，降低一定的法律风险的同时封锁公网扫描的可能性</p>
 <p>如果需要对公网部署还请购买云服务器，ICP备案针对的是服务器</p>
 </blockquote>
-<h1 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h1><p>这个视频给了我很大帮助，我尽量不重复讲里面已经有的内容</p>
+<p>开讲之前先来点免责声明</p>
+<p>以下内容皆为个人经验绝对不是什么教程</p>
+<p>主要是记录一些踩过的坑防止别人再踩一遍</p>
+<p>以及我在编写前没有阅读过源码，如果有错误可以来仓库提个 issue</p>
+<h2 id="异地组网"><a href="#异地组网" class="headerlink" title="异地组网"></a>异地组网</h2><p>异地组网的存在本身是为了解决异地设备之间的加密问题</p>
+<p>异地的两台设备在互相访问时会有大量数据经过公网</p>
+<p>不对敏感数据进行加密无异于裸奔</p>
+<p>广泛应用的 SSL&#x2F;TLS 加密需要一个被信任的第三方机构签发的证书</p>
+<p>这在小型网络中昂贵麻烦且无必要</p>
+<p><a target="_blank" rel="noopener" href="https://www.wireguard.com/">WireGuard</a> 的出现就是为了解决这样的问题</p>
+<p>让两台处在不同环境的设备获得在局域网中一样的安全通讯</p>
+<p>但连接时打开的面向公网的端口也可能成为麻烦的根源</p>
+<p>于是组网软件出现了</p>
+<p>他们简化了流程，让连接过程不再需要设备允许公网流量进入</p>
+<p>粗略地说，就是让两台需要连接的设备分别向可以直连的协调服务器建立连接</p>
+<p>再让双方代替协调服务器的位置直接进行通讯</p>
+<p>整个流程不需要终端设备接收任何的入站流量，只有对协调服务器发出的出站流量</p>
+<h2 id="软件选择"><a href="#软件选择" class="headerlink" title="软件选择"></a>软件选择</h2><p>目前主流的组网软件有 <a target="_blank" rel="noopener" href="https://www.zerotier.com/">ZeroTier</a> <a target="_blank" rel="noopener" href="https://tailscale.com/">Tailscale</a> 和 <a target="_blank" rel="noopener" href="https://easytier.cn/">EasyTier</a></p>
+<p>关于 Tailscale 可以看看这个视频 <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV13P411q7Cy">能与ZeroTier齐名的内网穿透工具Tailscale，比ZeroTier还好用？</a></p>
+<p>我个人不太喜欢 Tailscale 的管理模式，而且必须使用第三方账号注册使用，还得在每个设备上登录</p>
+<p>EasyTier 看上去确实不错，但我有些 ZeroTier 的沉没成本在导致没有什么动力去尝试了</p>
+<p>同时去中心化的设计也会造成一些问题，比如配置麻烦一类的</p>
+<p>我只是抛出一点选项来让你做对比，请结合自身情况来找到最适合你的选项</p>
+<h1 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h1><p>这些视频给了我很大帮助，但好像只有已经会了的人才看得懂，我做点补充</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Vh411F7Mr">内网穿透工具ZeroTier，从简单到复杂的玩法，无保留，一期全放送</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1oL411Y7pB">这么良心的开源、内网穿透工具ZeroTier，为啥到你手就不好用了？</a></p>
-<h2 id="ipv4与ipv6"><a href="#ipv4与ipv6" class="headerlink" title="ipv4与ipv6"></a>ipv4与ipv6</h2><p>当客户端连接到planet时，客户端与planet会协商出一个与客户端IP对应的ID</p>
-<p>ID在客户端运行</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zerotier-cli info</span><br></pre></td></tr></table></figure>
-<p>时会被输出出来</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">200 info 1234567890 1.14.2 ONLINE</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>请求状态码 操作 ID 版本 状态</p>
-</blockquote>
-<p>在其他客户端尝试连接的时候，会先尝试是否能使用ip直连</p>
-<p>如果不能直连，会进入中继模式</p>
-<p>不能直连的原因基本都是因为 <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%BD%91%E7%BB%9C%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2">NAT</a> 造成的</p>
-<blockquote>
-<p>我没有研究过，在我开始了解的时候ipv6已经基本普及</p>
-</blockquote>
-<p>在ipv6环境下大概率没有NAT影响，所有设备都可以直接互访</p>
-<p>如果你没有公网ipv6和公网ipv4，并且 <strong>非常确定</strong> 自己已经做了所有自己能做的事</p>
-<p>那么还有两种办法：</p>
-<ul>
-<li>使用移动数据服务</li>
-<li>购买云服务器</li>
-</ul>
-<p>使用运营商的移动数据服务，比如手机连接移动数据后启动个人热点让服务器连接</p>
-<p>现在几乎所有运营商的移动数据都能让设备获得ipv6地址</p>
-<p>如果这条路走不通，还可以去购买拥有公网ip的云服务器</p>
-<p>把所有东西都丢到云服务器上直接运行，或者部署 <a target="_blank" rel="noopener" href="https://github.com/fatedier/frp">frp</a> 服务器</p>
-<p>先部署ZeroTier来避免打开公网端口，然后连接frp</p>
-<p>再新建一个ZeroTier网络用来让其他设备连接后就可以使用你的服务了</p>
-<p>只要有一方拥有公网ip，直连成功率接近百分百</p>
-<p>选择购买服务器时，最好的办法其实是全自部署，详见下方</p>
-<p>以上方式全部不推荐，我也没有真正尝试过，请确认你没有ipv6公网地址</p>
 <h2 id="半自部署"><a href="#半自部署" class="headerlink" title="半自部署"></a>半自部署</h2><p>半自部署简单来说就是部署 <a target="_blank" rel="noopener" href="https://docs.zerotier.com/controller">网络控制器</a></p>
-<blockquote>
-<p>planet和moon最前面的视频有讲，我不重复</p>
-</blockquote>
 <p>半自部署最大的好处是没有官方网络控制器的设备数和网络数上限，并不会有安全性的提升</p>
 <p>因为连接的planet服务器依旧是别人的，在连接网络时使用的是 <strong>节点id+网络id</strong> 的格式</p>
 <p>而节点id是由planet服务器分发的，理论上planet可以把你导向另外的控制器</p>
 <blockquote>
-<p>个人理解，总之就是planet上运行的代码不透明，你在使用ZeroTier的服务时请确认你信任ZeroTier官方</p>
+<p>个人理解，总之就是planet上运行的代码对用户来说不透明，在使用其他人的提供的服务前请确认你信任他</p>
 </blockquote>
 <p>网络控制器控制着几乎所有的ZeroTier功能，比如IP分配，路由表和DNS配置下发</p>
 <p>ZeroTier的客户端本身就拥有成为网络控制器的能力</p>
 <p>你可以把他部署在一个始终在线的节点上，比如你家路由器</p>
-<p>在连接到官方的管理界面 <a target="_blank" rel="noopener" href="https://my.zerotier.com/">https://my.zerotier.com</a> 时，实际上就是连接到了官方分配给你的节点上的界面</p>
+<p>在连接到官方的网络管理界面 <a target="_blank" rel="noopener" href="https://my.zerotier.com/">https://my.zerotier.com/</a> 时，实际上就是连接到了官方分配给你的节点</p>
 <p>我在这个方案上花了很多时间，最后发现其实挺简单</p>
 <p>只要部署 <a target="_blank" rel="noopener" href="https://github.com/key-networks/ztncui">ztncui</a> 就行</p>
 <p>详细看下方实操章节</p>
@@ -339,18 +321,11 @@
 <p>这样你可以看到所有你正在运行的代码，并且所有的数据和权限都在自己手里</p>
 <p>这是社区制作的一键部署包 <a target="_blank" rel="noopener" href="https://github.com/xubiaolin/docker-zerotier-planet">docker-zerotier-planet</a></p>
 <p>他会同时部署planet服务器，moon服务器，网络控制器管理界面 <a target="_blank" rel="noopener" href="https://github.com/key-networks/ztncui">ztncui</a>，以及官方客户端</p>
-<p>但这个方案服务器ip变动时就需要进行重新搭建，并且需要暴露端口</p>
-<p>既然都暴露端口了，在我的情况下不如直接配置 <a target="_blank" rel="noopener" href="https://github.com/jeessy2/ddns-go">ddns-go</a> ，解析到公网ipv6直接从公网连接到服务器</p>
-<p>或许你可以通过调整云服务商提供的防火墙来避开法律风险？</p>
-<p>比如每隔一段时间检查节点IP地址，然后仅允许所有节点的IP地址通过？</p>
-<blockquote>
-<p>不知道这种情况ICP备案的时候网站用途要填什么哈哈</p>
-</blockquote>
+<p>但这个方案服务器ip变动时就需要进行重新部署，并且需要暴露端口</p>
+<p>既然都暴露端口了，在我的情况下不如直接配置 <a target="_blank" rel="noopener" href="https://github.com/jeessy2/ddns-go">ddns-go</a> ，解析到公网ipv6从公网连接到服务器</p>
 <p>这个方案没什么好讲的，下载下来一键启动就行</p>
-<h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><p>也是同一个人的视频，我只做补充，以下内容全部使用官方网络控制器</p>
-<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Vh411F7Mr">内网穿透工具ZeroTier，从简单到复杂的玩法，无保留，一期全放送</a></p>
-<h2 id="ztncui"><a href="#ztncui" class="headerlink" title="ztncui"></a>ztncui</h2><blockquote>
-<p>注意，ztncui的Github仓库上次更新时间是 <a target="_blank" rel="noopener" href="https://github.com/key-networks/ztncui/commit/1b2284864de48d2dcae22582fff122fe24909c3d">2023.8.31</a></p>
+<h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><h2 id="ztncui"><a href="#ztncui" class="headerlink" title="ztncui"></a>ztncui</h2><blockquote>
+<p>注意，ztncui的GitHub仓库上次更新时间是 <a target="_blank" rel="noopener" href="https://github.com/key-networks/ztncui/commit/1b2284864de48d2dcae22582fff122fe24909c3d">2023.8.31</a></p>
 </blockquote>
 <p>我这里提供Docker的部署方法，因为我的环境不方便直接安装npm</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:<span class="number">23</span>-alpine AS builder</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apk add --no-cache git python3 build-base \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; git <span class="built_in">clone</span> --branch master --single-branch --depth 1 https://github.com/key-networks/ztncui.git</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /ztncui/src</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> npm -g install node-gyp \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; npm install</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> node:<span class="number">23</span>-alpine</span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder /ztncui /ztncui</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /ztncui/src</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;npm&quot;</span>,<span class="string">&quot;start&quot;</span>]</span></span><br></pre></td></tr></table></figure>
@@ -366,7 +341,7 @@
 <p>少量设备其实没必要使用这个功能，而且在我的情况下必须先连接到网络才能打开管理面板</p>
 <h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><p>ZeroTier虽然不需要去在意节点本身的ip地址，但连接其他节点时使用的还是虚拟内网中的ip地址</p>
 <p>如果不想记忆ip地址，想使用域名访问服务器的话，在web面板里有一个DNS配置</p>
-<p><img src="/images/ZTDNS.png" alt="DNS"></p>
+<p><img src="/images/ZTDNS.webp" alt="DNS"></p>
 <p>Search Domain里填写你想要解析的域名，再在Server Address里填写DNS服务器的ip就可以</p>
 <p>如果你想访问 <code>123.zt</code> 或 <code>www.123.zt</code> ，那么你就可以填写 <code>zt</code> 或 <code>123.zt</code></p>
 <p>因为我有一台openwrt软路由，使用的默认的DNS服务器 <code>Dnsmasq</code></p>
@@ -386,12 +361,12 @@
 <h2 id="默认路由"><a href="#默认路由" class="headerlink" title="默认路由"></a>默认路由</h2><p>如果想让网络内的设备像在家里的局域网里一样通过网络内的路由器上网</p>
 <p>官方有一篇教程 <a target="_blank" rel="noopener" href="https://docs.zerotier.com/exitnode">VPN Exit Node</a></p>
 <p>简单来说就是把路由规则设置成以下这样</p>
-<p><img src="/images/ZTRoutes.png" alt="Routes"></p>
+<p><img src="/images/ZTRoutes.webp" alt="Routes"></p>
 <p>然后将终端设备的allowDefault设置为1</p>
 <p>Windows的长这样</p>
-<p><img src="/images/ZTWindowsConfig.png" alt="Windows"></p>
+<p><img src="/images/ZTWindowsConfig.webp" alt="Windows"></p>
 <p>官方安卓客户端上长这样</p>
-<p><img src="/images/ZTAndroidConfig.png" alt="Android"></p>
+<p><img src="/images/ZTAndroidConfig.webp" alt="Android"></p>
 <p>引用一下DeepSeek生成的</p>
 <blockquote>
 <p>ZeroTier中的<code>allowDefault</code>设置名称源于其功能目的，具体解析如下：</p>
@@ -428,15 +403,15 @@
 <p>此配置中，<code>allowDefault: true</code>允许将<code>10.147.17.1</code>设为默认网关，所有非本地流量通过该节点转发。</p>
 <p>总之，<code>allowDefault</code>的命名直观反映了其核心功能：<strong>允许（Allow）ZeroTier接管系统的默认（Default）路由</strong>，这一设计既符合技术术语，也遵循了软件配置的常见命名规范。</p>
 </blockquote>
-<h2 id="Docker部署"><a href="#Docker部署" class="headerlink" title="Docker部署"></a>Docker部署</h2><p>我认为一般用户没必要看这个，这个东西本身其实是我在摸索的时候走歪的一条路</p>
+<h2 id="Docker-部署"><a href="#Docker-部署" class="headerlink" title="Docker 部署"></a>Docker 部署</h2><p>我认为一般用户没必要看这个，这个东西本身其实是我在摸索的时候走歪的一条路</p>
 <p>一般来说直接安装官方包就行</p>
 <p>如果实在不行，可以继续看</p>
-<p>在Docker下安装有三条路</p>
+<p>在 Docker 下安装有三条路</p>
 <ul>
 <li>部署 <a target="_blank" rel="noopener" href="https://hub.docker.com/r/zerotier/zerotier">官方镜像</a></li>
-<li>在Debian镜像下安装官方包</li>
-<li>在Alpine镜像下自行编译源码<blockquote>
-<p>Alpine似乎本来是有官方包的，后来被撤了</p>
+<li>在 Debian 镜像下安装官方包</li>
+<li>在 Alpine 镜像下自行编译源码<blockquote>
+<p>Alpine 似乎本来是有官方包的，后来被撤了</p>
 </blockquote>
 </li>
 </ul>
@@ -446,25 +421,14 @@
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">zerotier:</span></span><br><span class="line">    <span class="attr">build:</span> <span class="string">.</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">zerotier</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./data:/var/lib/zerotier-one</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/dev/net/tun:/dev/net/tun</span></span><br><span class="line">    <span class="attr">privileged:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 <p>构建镜像时的CPU需求量很高，记得放在主力机上构建</p>
 <p>这是我试出来的最小配置，不嫌烦的可以自己试试</p>
-<p>以及我给了这个容器privileged权限，不喜欢的可以自己试试</p>
-<p>顺带一提，我现在用的是OpenWrt仓库里的软件包</p>
-<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>这套方案适合不敢直接开端口到公网的人，也适合朋友之间联机用</p>
-<p>我是在很久之前就发现了ZeroTier这样的软件，但直到最近才真正搞懂他是怎么运行的</p>
-<p>ZeroTier有一个竞品 <a target="_blank" rel="noopener" href="https://tailscale.com/">TailScale</a>，可以看看这个视频 <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV13P411q7Cy">能与ZeroTier齐名的内网穿透工具Tailscale，比ZeroTier还好用？</a></p>
-<p>目前看来对于普通用户来说这玩意比ZeroTier更好，更新更勤，协议更透明，全平台支持更好</p>
-<p>也不是没有缺点，限制自定义IP，强制登录账号的同时必须使用第三方平台账号，限制死的用户数和设备数</p>
-<blockquote>
-<p>但是免费套餐对于个人用户来说足够了</p>
-</blockquote>
-<p>之后可能会拎出来单独讲讲</p>
-<p>有的人可能不喜欢中心化的模式，有一个开源的去中心化的类似项目 <a target="_blank" rel="noopener" href="https://easytier.cn/">EasyTier</a></p>
-<p>这两个项目都使用到了 <a target="_blank" rel="noopener" href="https://www.wireguard.com/">WireGuard</a> 作为协议，如果直接使用WireGuard的话需要开放端口到公网</p>
-<p>ZeroTier使用的是自己的协议，但这并不代表ZeroTier好过其他产品，这方面我没有能力评价</p>
-<p>目前这套解决方案对于我来说已经足够了，所以我没有仔细研究过其他的解决方案</p>
+<p>以及我给了这个容器 privileged 权限，不喜欢的可以自己试试</p>
+<p>顺带一提，我现在用的是 OpenWrt 仓库里的软件包</p>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>目前这套解决方案对于我来说已经足够了，所以我没有仔细研究过其他的解决方案</p>
 <p>虽然东西看上去不多，但是折磨了我很久，我没能找到一篇能从头到尾给我讲明白的文章</p>
+<p>(其实现在也讲得不太明白，以后可能还会回来更新)</p>
 <p>这篇文章也引用了很多别人的东西，我不觉得我能讲得比别人好</p>
 <p>我很感谢他们，希望我也能帮助到你</p>
-<p>总之我写了这篇文章，如果有帮到你或者你有什么需要补充的，可以给我发个邮件提个issue什么的</p>
+<p>总之我写了这篇文章，如果有帮到你或者你有什么需要补充的，可以给我发个邮件提个 issue 什么的</p>
 
     </div>
 
@@ -482,7 +446,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://blog.jinenze.xyz/zh-CN/2025/AboutZeroTier/" title="关于使用ZeroTier进行异地组网">https://blog.jinenze.xyz/zh-CN/2025/AboutZeroTier/</a>
+      <a href="https://blog.jinenze.xyz/zh-CN/2025/AboutZeroTier/" title="关于使用 ZeroTier 进行异地组网">https://blog.jinenze.xyz/zh-CN/2025/AboutZeroTier/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！

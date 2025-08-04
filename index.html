@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.jinenze.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.23.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.jinenze.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="Blog">
@@ -49,7 +49,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
 <script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
 <script src="/js/third-party/search/local-search.js" defer></script>
 
 
@@ -397,7 +397,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/zh-CN/2025/AboutZeroTier/" class="post-title-link" itemprop="url">关于使用ZeroTier进行异地组网</a>
+          <a href="/zh-CN/2025/AboutZeroTier/" class="post-title-link" itemprop="url">关于使用 ZeroTier 进行异地组网</a>
         </h2>
 
         <div class="post-meta-container">
@@ -415,7 +415,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-06-07 00:00:00" itemprop="dateModified" datetime="2025-06-07T00:00:00+00:00">2025-06-07</time>
+      <time title="修改时间：2025-08-04 00:00:00" itemprop="dateModified" datetime="2025-08-04T00:00:00+00:00">2025-08-04</time>
     </span>
 
   
@@ -429,16 +429,13 @@
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
-<p>以下内容仅适用于ZeroTier1.14</p>
+<p>以下内容仅适用于 ZeroTier 1.14</p>
 </blockquote>
-<blockquote>
-<p>我没有阅读过源码，请注意辨别</p>
-</blockquote>
-<p>ZeroTier可以将设备添加至一个由ZeroTier网络控制器控制的虚拟局域网</p>
-<p>通过中央服务器的协调来进行节点间的直连</p>
-<p>当你在你的家庭服务器上部署了个人网盘，密码托管，即时通讯，游戏服务器这样的服务时</p>
-<p>想在楼下的餐馆里，其他城市的酒店里，你朋友的家里访问到这些服务</p>
-<p>这时候就可以使用 <a target="_blank" rel="noopener" href="https://www.zerotier.com/">ZeroTier</a> 来构建一个虚拟局域网</p>
+<p>ZeroTier 可以将设备添加至一个由 ZeroTier 网络控制器控制的虚拟局域网</p>
+<p>通过协调服务器的协调来进行节点间的直连</p>
+<p>当你在你的家庭服务器上部署了个人网盘&#x2F;密码托管&#x2F;即时通讯&#x2F;游戏服务器这样的服务时</p>
+<p>想在楼下的餐馆里，其他城市的酒店里，你朋友的家里安全地访问到这些服务</p>
+<p>这时候就可以使用 ZeroTier 来构建一个虚拟局域网</p>
 <p>在国内环境下这种方案也可以降低一定的搭建个人信息平台时的法律风险</p>
           <!--noindex-->
             <div class="post-button">
