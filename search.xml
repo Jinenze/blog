@@ -1,55 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>关于Dockerfile</title>
-    <url>/zh-CN/2025/AboutDockerfile/</url>
-    <content><![CDATA[<p>主要记录学习过程</p>
-<p>学到新东西了就来更新</p>
-<p>Dockerfile有很多东西，这只是其中的一部分</p>
-<span id="more"></span>
-<p>Docker这东西说简单也不简单说难也不难</p>
-<p>实际上不是一般不是Docker难而是你想在容器中跑的东西难配置</p>
-<p>以下是一些实操</p>
-<p>先来看一个别人写的Dockerfile</p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.11</span>.<span class="number">11</span>-slim-bookworm as build</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PYTHONDONTWRITEBYTECODE=<span class="number">1</span></span><br><span class="line"><span class="keyword">ENV</span> PYTHONUNBUFFERED=<span class="number">1</span></span><br><span class="line"><span class="keyword">ENV</span> SET_CONTAINER_TIMEZONE=true</span><br><span class="line"><span class="keyword">ENV</span> CONTAINER_TIMEZONE=Asia/Shanghai</span><br><span class="line"><span class="keyword">ENV</span> TZ=Asia/Shanghai </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">ARG</span> TARGETARCH</span><br><span class="line"><span class="keyword">ARG</span> VERSION</span><br><span class="line"><span class="keyword">ENV</span> VERSION=$&#123;VERSION&#125;</span><br><span class="line"><span class="keyword">ENV</span> PYTHON_IN_DOCKER=<span class="string">&#x27;PYTHON_IN_DOCKER&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> scripts/* /app/</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get --allow-releaseinfo-change update \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; apt-get install -y --no-install-recommends jq chromium chromium-driver tzdata \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">ln</span> -snf /usr/share/zoneinfo/<span class="variable">$TZ</span> /etc/localtime \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">echo</span> <span class="variable">$TZ</span> &gt; /etc/timezone \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; dpkg-reconfigure --frontend noninteractive tzdata \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*  \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; apt-get clean</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./requirements.txt /tmp/requirements.txt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">mkdir</span> /data \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">cd</span> /tmp \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; python3 -m pip install --upgrade pip \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; PIP_ROOT_USER_ACTION=ignore pip install \</span></span><br><span class="line"><span class="language-bash">    --disable-pip-version-check \</span></span><br><span class="line"><span class="language-bash">    --no-cache-dir \</span></span><br><span class="line"><span class="language-bash">    -r requirements.txt \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /tmp/* \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; pip cache purge \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/* \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/log/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> LANG=C.UTF-<span class="number">8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;python3&quot;</span>,<span class="string">&quot;main.py&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-<p>槽点很多，多到数不过来</p>
-<p>直接看修改后</p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.11</span>-slim</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PYTHONDONTWRITEBYTECODE=<span class="number">1</span> \</span><br><span class="line">    TZ=Asia/Shanghai</span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> scripts/* .</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> --mount=<span class="built_in">type</span>=<span class="built_in">bind</span>,<span class="built_in">source</span>=requirements.txt,target=/tmp/requirements.txt \</span></span><br><span class="line"><span class="language-bash">    apt-get update &amp;&amp; apt-get install -y --no-install-recommends \</span></span><br><span class="line"><span class="language-bash">    chromium \</span></span><br><span class="line"><span class="language-bash">    chromium-driver \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; pip install --no-cache-dir -r /tmp/requirements.txt \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;python3&quot;</span>,<span class="string">&quot;main.py&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-<p>Python3.7后不再需要 <code>PYTHONUNBUFFERED</code></p>
-<blockquote>
-<p><a href="https://docs.python.org/3/using/cmdline.html#cmdoption-u">https://docs.python.org/3/using/cmdline.html#cmdoption-u</a></p>
-</blockquote>
-<p>Debian官方镜像只需要清理 <code>apt update</code> 时下载的目录即可</p>
-<p>镜像中已经配置了自动清理deb包缓存</p>
-<blockquote>
-<p>在这个目录下 &#x2F;etc&#x2F;apt&#x2F;apt.conf.d&#x2F;docker-clean</p>
-</blockquote>
-<p>对 <code>requirements.txt</code> 的调用换成了官方最佳实践的示例</p>
-<blockquote>
-<p><a href="https://docs.docker.com/build/building/best-practices/#add-or-copy">https://docs.docker.com/build/building/best-practices/#add-or-copy</a></p>
-</blockquote>
-<p>将 <code>CMD</code> 换成了 <code>ENTRYPOINT</code></p>
-<blockquote>
-<ul>
-<li><a href="https://docs.docker.com/reference/dockerfile/#entrypoint">ENTRYPOINT</a></li>
-<li><a href="https://docs.docker.com/reference/dockerfile/#shell-and-exec-form">Shell and exec form</a></li>
-<li><a href="https://docs.docker.com/reference/compose-file/services/#init">init</a></li>
-</ul>
-</blockquote>
-<p><code>jq</code> 这个包是用来在命令行中解析json的，很明显这里只有一个需要运行的python程序</p>
-<p>我不知道为什么要加，反正删了没出问题</p>
-<p>删除了一堆关于时区的配置，配置时区只需要使用 <code>TZ</code> 环境变量就行</p>
-<p><code>TZ</code> 是linux自带的环境变量而不是Docker添加的</p>
-<p>我对时区了解的不是很多，反正跑起来了不是吗</p>
-<p>他在python程序里读取了环境变量中的版本号</p>
-<p>其实版本号不只这个地方有与其发布版本的时候打进去不如手动改</p>
-<p><code>FROM ... as ...</code> 这里的 <code>as</code> 记得写成 <code>AS</code></p>
-<p>大小写要规范</p>
-<p>其他案例可以看我的其他blog</p>
-<p>之后再继续更新</p>
-]]></content>
-  </entry>
-  <entry>
     <title>关于Hexo在Github Pages上的搭建</title>
     <url>/zh-CN/2025/AboutHexo/</url>
     <content><![CDATA[<p>记录一下我在Github Page上搭建Hexo的过程</p>
@@ -193,6 +144,55 @@
 <p>这样配置时，当你推送代码到 <code>main</code> 分支的时候，会触发这个action</p>
 <p>这样配置时就不需要在容器里安装 <code>git</code> 了，直接在宿主机把 <code>data</code> 文件夹上传到你仓库的 <code>main</code> 分支就行</p>
 <p>部署时默认部署在 <code>gh-pages</code> 分支，记得把Github Page部署的 <code>branch</code> 换了</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>关于Dockerfile</title>
+    <url>/zh-CN/2025/AboutDockerfile/</url>
+    <content><![CDATA[<p>主要记录学习过程</p>
+<p>学到新东西了就来更新</p>
+<p>Dockerfile有很多东西，这只是其中的一部分</p>
+<span id="more"></span>
+<p>Docker这东西说简单也不简单说难也不难</p>
+<p>实际上不是一般不是Docker难而是你想在容器中跑的东西难配置</p>
+<p>以下是一些实操</p>
+<p>先来看一个别人写的Dockerfile</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.11</span>.<span class="number">11</span>-slim-bookworm as build</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PYTHONDONTWRITEBYTECODE=<span class="number">1</span></span><br><span class="line"><span class="keyword">ENV</span> PYTHONUNBUFFERED=<span class="number">1</span></span><br><span class="line"><span class="keyword">ENV</span> SET_CONTAINER_TIMEZONE=true</span><br><span class="line"><span class="keyword">ENV</span> CONTAINER_TIMEZONE=Asia/Shanghai</span><br><span class="line"><span class="keyword">ENV</span> TZ=Asia/Shanghai </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">ARG</span> TARGETARCH</span><br><span class="line"><span class="keyword">ARG</span> VERSION</span><br><span class="line"><span class="keyword">ENV</span> VERSION=$&#123;VERSION&#125;</span><br><span class="line"><span class="keyword">ENV</span> PYTHON_IN_DOCKER=<span class="string">&#x27;PYTHON_IN_DOCKER&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> scripts/* /app/</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get --allow-releaseinfo-change update \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; apt-get install -y --no-install-recommends jq chromium chromium-driver tzdata \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">ln</span> -snf /usr/share/zoneinfo/<span class="variable">$TZ</span> /etc/localtime \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">echo</span> <span class="variable">$TZ</span> &gt; /etc/timezone \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; dpkg-reconfigure --frontend noninteractive tzdata \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*  \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; apt-get clean</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./requirements.txt /tmp/requirements.txt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">mkdir</span> /data \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">cd</span> /tmp \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; python3 -m pip install --upgrade pip \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; PIP_ROOT_USER_ACTION=ignore pip install \</span></span><br><span class="line"><span class="language-bash">    --disable-pip-version-check \</span></span><br><span class="line"><span class="language-bash">    --no-cache-dir \</span></span><br><span class="line"><span class="language-bash">    -r requirements.txt \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /tmp/* \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; pip cache purge \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/* \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/log/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> LANG=C.UTF-<span class="number">8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;python3&quot;</span>,<span class="string">&quot;main.py&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<p>槽点很多，多到数不过来</p>
+<p>直接看修改后</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.11</span>-slim</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PYTHONDONTWRITEBYTECODE=<span class="number">1</span> \</span><br><span class="line">    TZ=Asia/Shanghai</span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> scripts/* .</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> --mount=<span class="built_in">type</span>=<span class="built_in">bind</span>,<span class="built_in">source</span>=requirements.txt,target=/tmp/requirements.txt \</span></span><br><span class="line"><span class="language-bash">    apt-get update &amp;&amp; apt-get install -y --no-install-recommends \</span></span><br><span class="line"><span class="language-bash">    chromium \</span></span><br><span class="line"><span class="language-bash">    chromium-driver \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; pip install --no-cache-dir -r /tmp/requirements.txt \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;python3&quot;</span>,<span class="string">&quot;main.py&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<p>Python3.7后不再需要 <code>PYTHONUNBUFFERED</code></p>
+<blockquote>
+<p><a href="https://docs.python.org/3/using/cmdline.html#cmdoption-u">https://docs.python.org/3/using/cmdline.html#cmdoption-u</a></p>
+</blockquote>
+<p>Debian官方镜像只需要清理 <code>apt update</code> 时下载的目录即可</p>
+<p>镜像中已经配置了自动清理deb包缓存</p>
+<blockquote>
+<p>在这个目录下 &#x2F;etc&#x2F;apt&#x2F;apt.conf.d&#x2F;docker-clean</p>
+</blockquote>
+<p>对 <code>requirements.txt</code> 的调用换成了官方最佳实践的示例</p>
+<blockquote>
+<p><a href="https://docs.docker.com/build/building/best-practices/#add-or-copy">https://docs.docker.com/build/building/best-practices/#add-or-copy</a></p>
+</blockquote>
+<p>将 <code>CMD</code> 换成了 <code>ENTRYPOINT</code></p>
+<blockquote>
+<ul>
+<li><a href="https://docs.docker.com/reference/dockerfile/#entrypoint">ENTRYPOINT</a></li>
+<li><a href="https://docs.docker.com/reference/dockerfile/#shell-and-exec-form">Shell and exec form</a></li>
+<li><a href="https://docs.docker.com/reference/compose-file/services/#init">init</a></li>
+</ul>
+</blockquote>
+<p><code>jq</code> 这个包是用来在命令行中解析json的，很明显这里只有一个需要运行的python程序</p>
+<p>我不知道为什么要加，反正删了没出问题</p>
+<p>删除了一堆关于时区的配置，配置时区只需要使用 <code>TZ</code> 环境变量就行</p>
+<p><code>TZ</code> 是linux自带的环境变量而不是Docker添加的</p>
+<p>我对时区了解的不是很多，反正跑起来了不是吗</p>
+<p>他在python程序里读取了环境变量中的版本号</p>
+<p>其实版本号不只这个地方有与其发布版本的时候打进去不如手动改</p>
+<p><code>FROM ... as ...</code> 这里的 <code>as</code> 记得写成 <code>AS</code></p>
+<p>大小写要规范</p>
+<p>其他案例可以看我的其他blog</p>
+<p>之后再继续更新</p>
 ]]></content>
   </entry>
   <entry>
