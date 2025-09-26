@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>关于Dockerfile</title>
+    <url>/zh-CN/2025/AboutDockerfile/</url>
+    <content><![CDATA[<p>主要记录学习过程</p>
+<p>学到新东西了就来更新</p>
+<p>Dockerfile有很多东西，这只是其中的一部分</p>
+<span id="more"></span>
+<p>Docker这东西说简单也不简单说难也不难</p>
+<p>实际上不是一般不是Docker难而是你想在容器中跑的东西难配置</p>
+<p>以下是一些实操</p>
+<p>先来看一个别人写的Dockerfile</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.11</span>.<span class="number">11</span>-slim-bookworm as build</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PYTHONDONTWRITEBYTECODE=<span class="number">1</span></span><br><span class="line"><span class="keyword">ENV</span> PYTHONUNBUFFERED=<span class="number">1</span></span><br><span class="line"><span class="keyword">ENV</span> SET_CONTAINER_TIMEZONE=true</span><br><span class="line"><span class="keyword">ENV</span> CONTAINER_TIMEZONE=Asia/Shanghai</span><br><span class="line"><span class="keyword">ENV</span> TZ=Asia/Shanghai </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">ARG</span> TARGETARCH</span><br><span class="line"><span class="keyword">ARG</span> VERSION</span><br><span class="line"><span class="keyword">ENV</span> VERSION=$&#123;VERSION&#125;</span><br><span class="line"><span class="keyword">ENV</span> PYTHON_IN_DOCKER=<span class="string">&#x27;PYTHON_IN_DOCKER&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> scripts/* /app/</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get --allow-releaseinfo-change update \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; apt-get install -y --no-install-recommends jq chromium chromium-driver tzdata \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">ln</span> -snf /usr/share/zoneinfo/<span class="variable">$TZ</span> /etc/localtime \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">echo</span> <span class="variable">$TZ</span> &gt; /etc/timezone \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; dpkg-reconfigure --frontend noninteractive tzdata \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*  \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; apt-get clean</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./requirements.txt /tmp/requirements.txt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">mkdir</span> /data \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">cd</span> /tmp \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; python3 -m pip install --upgrade pip \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; PIP_ROOT_USER_ACTION=ignore pip install \</span></span><br><span class="line"><span class="language-bash">    --disable-pip-version-check \</span></span><br><span class="line"><span class="language-bash">    --no-cache-dir \</span></span><br><span class="line"><span class="language-bash">    -r requirements.txt \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /tmp/* \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; pip cache purge \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/* \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/log/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> LANG=C.UTF-<span class="number">8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;python3&quot;</span>,<span class="string">&quot;main.py&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<p>槽点很多，多到数不过来</p>
+<p>直接看修改后</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.11</span>-slim</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PYTHONDONTWRITEBYTECODE=<span class="number">1</span> \</span><br><span class="line">    TZ=Asia/Shanghai</span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> scripts/* .</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> --mount=<span class="built_in">type</span>=<span class="built_in">bind</span>,<span class="built_in">source</span>=requirements.txt,target=/tmp/requirements.txt \</span></span><br><span class="line"><span class="language-bash">    apt-get update &amp;&amp; apt-get install -y --no-install-recommends \</span></span><br><span class="line"><span class="language-bash">    chromium \</span></span><br><span class="line"><span class="language-bash">    chromium-driver \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; pip install --no-cache-dir -r /tmp/requirements.txt \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;python3&quot;</span>,<span class="string">&quot;main.py&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<p>Python3.7后不再需要 <code>PYTHONUNBUFFERED</code></p>
+<blockquote>
+<p><a href="https://docs.python.org/3/using/cmdline.html#cmdoption-u">https://docs.python.org/3/using/cmdline.html#cmdoption-u</a></p>
+</blockquote>
+<p>Debian官方镜像只需要清理 <code>apt update</code> 时下载的目录即可</p>
+<p>镜像中已经配置了自动清理deb包缓存</p>
+<blockquote>
+<p>在这个目录下 &#x2F;etc&#x2F;apt&#x2F;apt.conf.d&#x2F;docker-clean</p>
+</blockquote>
+<p>对 <code>requirements.txt</code> 的调用换成了官方最佳实践的示例</p>
+<blockquote>
+<p><a href="https://docs.docker.com/build/building/best-practices/#add-or-copy">https://docs.docker.com/build/building/best-practices/#add-or-copy</a></p>
+</blockquote>
+<p>将 <code>CMD</code> 换成了 <code>ENTRYPOINT</code></p>
+<blockquote>
+<ul>
+<li><a href="https://docs.docker.com/reference/dockerfile/#entrypoint">ENTRYPOINT</a></li>
+<li><a href="https://docs.docker.com/reference/dockerfile/#shell-and-exec-form">Shell and exec form</a></li>
+<li><a href="https://docs.docker.com/reference/compose-file/services/#init">init</a></li>
+</ul>
+</blockquote>
+<p><code>jq</code> 这个包是用来在命令行中解析json的，很明显这里只有一个需要运行的python程序</p>
+<p>我不知道为什么要加，反正删了没出问题</p>
+<p>删除了一堆关于时区的配置，配置时区只需要使用 <code>TZ</code> 环境变量就行</p>
+<p><code>TZ</code> 是linux自带的环境变量而不是Docker添加的</p>
+<p>我对时区了解的不是很多，反正跑起来了不是吗</p>
+<p>他在python程序里读取了环境变量中的版本号</p>
+<p>其实版本号不只这个地方有与其发布版本的时候打进去不如手动改</p>
+<p><code>FROM ... as ...</code> 这里的 <code>as</code> 记得写成 <code>AS</code></p>
+<p>大小写要规范</p>
+<p>其他案例可以看我的其他blog</p>
+<p>之后再继续更新</p>
+]]></content>
+  </entry>
+  <entry>
     <title>关于Hexo在Github Pages上的搭建</title>
     <url>/zh-CN/2025/AboutHexo/</url>
     <content><![CDATA[<p>记录一下我在Github Page上搭建Hexo的过程</p>
@@ -147,55 +196,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>关于Dockerfile</title>
-    <url>/zh-CN/2025/AboutDockerfile/</url>
-    <content><![CDATA[<p>主要记录学习过程</p>
-<p>学到新东西了就来更新</p>
-<p>Dockerfile有很多东西，这只是其中的一部分</p>
-<span id="more"></span>
-<p>Docker这东西说简单也不简单说难也不难</p>
-<p>实际上不是一般不是Docker难而是你想在容器中跑的东西难配置</p>
-<p>以下是一些实操</p>
-<p>先来看一个别人写的Dockerfile</p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.11</span>.<span class="number">11</span>-slim-bookworm as build</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PYTHONDONTWRITEBYTECODE=<span class="number">1</span></span><br><span class="line"><span class="keyword">ENV</span> PYTHONUNBUFFERED=<span class="number">1</span></span><br><span class="line"><span class="keyword">ENV</span> SET_CONTAINER_TIMEZONE=true</span><br><span class="line"><span class="keyword">ENV</span> CONTAINER_TIMEZONE=Asia/Shanghai</span><br><span class="line"><span class="keyword">ENV</span> TZ=Asia/Shanghai </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">ARG</span> TARGETARCH</span><br><span class="line"><span class="keyword">ARG</span> VERSION</span><br><span class="line"><span class="keyword">ENV</span> VERSION=$&#123;VERSION&#125;</span><br><span class="line"><span class="keyword">ENV</span> PYTHON_IN_DOCKER=<span class="string">&#x27;PYTHON_IN_DOCKER&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> scripts/* /app/</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get --allow-releaseinfo-change update \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; apt-get install -y --no-install-recommends jq chromium chromium-driver tzdata \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">ln</span> -snf /usr/share/zoneinfo/<span class="variable">$TZ</span> /etc/localtime \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">echo</span> <span class="variable">$TZ</span> &gt; /etc/timezone \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; dpkg-reconfigure --frontend noninteractive tzdata \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*  \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; apt-get clean</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./requirements.txt /tmp/requirements.txt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">mkdir</span> /data \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">cd</span> /tmp \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; python3 -m pip install --upgrade pip \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; PIP_ROOT_USER_ACTION=ignore pip install \</span></span><br><span class="line"><span class="language-bash">    --disable-pip-version-check \</span></span><br><span class="line"><span class="language-bash">    --no-cache-dir \</span></span><br><span class="line"><span class="language-bash">    -r requirements.txt \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /tmp/* \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; pip cache purge \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/* \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/log/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> LANG=C.UTF-<span class="number">8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;python3&quot;</span>,<span class="string">&quot;main.py&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-<p>槽点很多，多到数不过来</p>
-<p>直接看修改后</p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.11</span>-slim</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PYTHONDONTWRITEBYTECODE=<span class="number">1</span> \</span><br><span class="line">    TZ=Asia/Shanghai</span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> scripts/* .</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> --mount=<span class="built_in">type</span>=<span class="built_in">bind</span>,<span class="built_in">source</span>=requirements.txt,target=/tmp/requirements.txt \</span></span><br><span class="line"><span class="language-bash">    apt-get update &amp;&amp; apt-get install -y --no-install-recommends \</span></span><br><span class="line"><span class="language-bash">    chromium \</span></span><br><span class="line"><span class="language-bash">    chromium-driver \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; pip install --no-cache-dir -r /tmp/requirements.txt \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;python3&quot;</span>,<span class="string">&quot;main.py&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-<p>Python3.7后不再需要 <code>PYTHONUNBUFFERED</code></p>
-<blockquote>
-<p><a href="https://docs.python.org/3/using/cmdline.html#cmdoption-u">https://docs.python.org/3/using/cmdline.html#cmdoption-u</a></p>
-</blockquote>
-<p>Debian官方镜像只需要清理 <code>apt update</code> 时下载的目录即可</p>
-<p>镜像中已经配置了自动清理deb包缓存</p>
-<blockquote>
-<p>在这个目录下 &#x2F;etc&#x2F;apt&#x2F;apt.conf.d&#x2F;docker-clean</p>
-</blockquote>
-<p>对 <code>requirements.txt</code> 的调用换成了官方最佳实践的示例</p>
-<blockquote>
-<p><a href="https://docs.docker.com/build/building/best-practices/#add-or-copy">https://docs.docker.com/build/building/best-practices/#add-or-copy</a></p>
-</blockquote>
-<p>将 <code>CMD</code> 换成了 <code>ENTRYPOINT</code></p>
-<blockquote>
-<ul>
-<li><a href="https://docs.docker.com/reference/dockerfile/#entrypoint">ENTRYPOINT</a></li>
-<li><a href="https://docs.docker.com/reference/dockerfile/#shell-and-exec-form">Shell and exec form</a></li>
-<li><a href="https://docs.docker.com/reference/compose-file/services/#init">init</a></li>
-</ul>
-</blockquote>
-<p><code>jq</code> 这个包是用来在命令行中解析json的，很明显这里只有一个需要运行的python程序</p>
-<p>我不知道为什么要加，反正删了没出问题</p>
-<p>删除了一堆关于时区的配置，配置时区只需要使用 <code>TZ</code> 环境变量就行</p>
-<p><code>TZ</code> 是linux自带的环境变量而不是Docker添加的</p>
-<p>我对时区了解的不是很多，反正跑起来了不是吗</p>
-<p>他在python程序里读取了环境变量中的版本号</p>
-<p>其实版本号不只这个地方有与其发布版本的时候打进去不如手动改</p>
-<p><code>FROM ... as ...</code> 这里的 <code>as</code> 记得写成 <code>AS</code></p>
-<p>大小写要规范</p>
-<p>其他案例可以看我的其他blog</p>
-<p>之后再继续更新</p>
-]]></content>
-  </entry>
-  <entry>
     <title>关于使用 ZeroTier 进行异地组网</title>
     <url>/zh-CN/2025/AboutZeroTier/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
@@ -214,31 +214,40 @@
 <p>如果需要对公网部署还请购买云服务器，ICP备案针对的是服务器</p>
 </blockquote>
 <p>开讲之前先来点免责声明</p>
-<p>以下内容皆为个人经验绝对不是什么教程</p>
+<p>以下内容皆为个人笔记绝对不是什么教程</p>
 <p>主要是记录一些踩过的坑防止别人再踩一遍</p>
 <p>以及我在编写前没有阅读过源码，如果有错误可以来仓库提个 issue</p>
-<h2 id="异地组网"><a href="#异地组网" class="headerlink" title="异地组网"></a>异地组网</h2><p>异地组网的存在本身是为了解决异地设备之间的加密问题</p>
+<h2 id="异地组网"><a href="#异地组网" class="headerlink" title="异地组网"></a>异地组网</h2><p>异地组网的主要用途是对异地设备之间的流量进行加密</p>
 <p>异地的两台设备在互相访问时会有大量数据经过公网</p>
 <p>不对敏感数据进行加密无异于裸奔</p>
-<p>广泛应用的 SSL&#x2F;TLS 加密需要一个被信任的第三方机构签发的证书</p>
+<p>SSL&#x2F;TLS 加密也可以完成这种任务，但需要搭建一个证书签发机构并在每个设备上手动信任</p>
+<p>或购买域名来获得被信任的第三方机构签发的证书</p>
 <p>这在小型网络中昂贵麻烦且无必要</p>
-<p><a href="https://www.wireguard.com/">WireGuard</a> 的出现就是为了解决这样的问题</p>
-<p>让两台处在不同环境的设备获得在局域网中一样的安全通讯</p>
-<p>但连接时打开的面向公网的端口也可能成为麻烦的根源</p>
-<p>于是组网软件出现了</p>
-<p>他们简化了流程，让连接过程不再需要设备允许公网流量进入</p>
-<p>粗略地说，就是让两台需要连接的设备分别向可以直连的协调服务器建立连接</p>
-<p>再让双方代替协调服务器的位置直接进行通讯</p>
-<p>整个流程不需要终端设备接收任何的入站流量，只有对协调服务器发出的出站流量</p>
+<p>而异地组网能以一个相对较低的成本完成这个任务</p>
+<p>简单来说，就是换了一种方式去验证双方身份和加密数据</p>
+<p>以目前主流的协议 <a href="https://www.wireguard.com/">WireGuard</a> 来说</p>
+<p>双方需要提前知道对方的公钥才可以进行连接</p>
+<p>虽然 WireGuard 本身已经可以进行组网，但对于日常使用还是有很多问题</p>
+<p>组网软件简单来说就是对协议的一层包装，用来解决实际使用上的一些问题</p>
+<p>比如公钥交换，在 NAT 下节点间的互连等</p>
 <h2 id="软件选择"><a href="#软件选择" class="headerlink" title="软件选择"></a>软件选择</h2><p>目前主流的组网软件有 <a href="https://www.zerotier.com/">ZeroTier</a> <a href="https://tailscale.com/">Tailscale</a> 和 <a href="https://easytier.cn/">EasyTier</a></p>
-<p>关于 Tailscale 可以看看这个视频 <a href="https://www.bilibili.com/video/BV13P411q7Cy">能与ZeroTier齐名的内网穿透工具Tailscale，比ZeroTier还好用？</a></p>
+<p>ZeroTier 基于自己的协议实现，而其他两家使用 WireGuard 作为通讯协议</p>
+<p>三家其实各有各的特色</p>
 <p>我个人不太喜欢 Tailscale 的管理模式，而且必须使用第三方账号注册使用，还得在每个设备上登录</p>
-<p>EasyTier 看上去确实不错，但我有些 ZeroTier 的沉没成本在导致没有什么动力去尝试了</p>
+<p>EasyTier 看上去确实不错，可惜我有些 ZeroTier 的沉没成本在导致没有什么动力去尝试了</p>
 <p>同时去中心化的设计也会造成一些问题，比如配置麻烦一类的</p>
+<p>对于我来说 ZeroTier 的优点就是没有缺点，能以一个简单的方式满足我的需求</p>
+<blockquote>
+<p>当然其实有点，比如我对他的通讯协议这方面是真的没有一点头绪</p>
+<p>以及我折腾好久才发现这东西原来点几个按钮就行之类的</p>
+<p>写这篇文章就是因为这个</p>
+</blockquote>
 <p>我只是抛出一点选项来让你做对比，请结合自身情况来找到最适合你的选项</p>
-<h1 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h1><p>这些视频给了我很大帮助，但好像只有已经会了的人才看得懂，我做点补充</p>
+<h1 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h1><p>从这里开始算是笔记，作为对下面几个视频的补充</p>
 <p><a href="https://www.bilibili.com/video/BV1Vh411F7Mr">内网穿透工具ZeroTier，从简单到复杂的玩法，无保留，一期全放送</a></p>
 <p><a href="https://www.bilibili.com/video/BV1oL411Y7pB">这么良心的开源、内网穿透工具ZeroTier，为啥到你手就不好用了？</a></p>
+<p>讲了一些视频里没提到的，我的建议是遇到问题再回来查一查有没有解决方案</p>
+<p>简单的使用的话直接看第一个视频就行</p>
 <h2 id="半自部署"><a href="#半自部署" class="headerlink" title="半自部署"></a>半自部署</h2><p>半自部署简单来说就是部署 <a href="https://docs.zerotier.com/controller">网络控制器</a></p>
 <p>半自部署最大的好处是没有官方网络控制器的设备数和网络数上限，并不会有安全性的提升</p>
 <p>因为连接的planet服务器依旧是别人的，在连接网络时使用的是 <strong>节点id+网络id</strong> 的格式</p>
@@ -248,6 +257,12 @@
 </blockquote>
 <p>网络控制器控制着几乎所有的ZeroTier功能，比如IP分配，路由表和DNS配置下发</p>
 <p>ZeroTier的客户端本身就拥有成为网络控制器的能力</p>
+<blockquote>
+<p>ZeroTier 1.16.0 中似乎将网络控制器移出了普通客户端 </p>
+<p><a href="https://github.com/zerotier/ZeroTierOne/blob/dev/RELEASE-NOTES.md">https://github.com/zerotier/ZeroTierOne/blob/dev/RELEASE-NOTES.md</a></p>
+<p>我还没有测试，官方教程似乎没有更新</p>
+<p>2025&#x2F;09&#x2F;26</p>
+</blockquote>
 <p>你可以把他部署在一个始终在线的节点上，比如你家路由器</p>
 <p>在连接到官方的网络管理界面 <a href="https://my.zerotier.com/">https://my.zerotier.com/</a> 时，实际上就是连接到了官方分配给你的节点</p>
 <p>我在这个方案上花了很多时间，最后发现其实挺简单</p>
