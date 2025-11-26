@@ -691,6 +691,12 @@ kbd {
 figure.highlight {
   overflow: auto;
   position: relative;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  figure.highlight {
+    color-scheme: dark;
+  }
 }
 figure.highlight pre {
   border: 0;
@@ -1416,7 +1422,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #f091ff;
+    background: #ff74a1;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -1793,7 +1799,7 @@ pre code {
 }
 @media (min-width: 1600px) {
   .footer-inner {
-    width: 73%;
+    width: 1160px;
   }
 }
 .use-motion .footer {
@@ -2761,7 +2767,7 @@ header.header {
 }
 @media (min-width: 1600px) {
   .main {
-    width: 73%;
+    width: 1160px;
   }
 }
 @media (max-width: 991px) {
