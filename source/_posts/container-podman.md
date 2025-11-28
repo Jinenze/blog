@@ -2,7 +2,9 @@
 title: Rootless Podman Quadlet 搭建记录
 lang: zh-CN
 date: "2025/11/26"
+updated: "2025/11/28"
 ---
+>注意本文可能具有很强的时效性，请自行查证
 
 最近把容器后端从 Docker 切换到了 Podman ，记录一下受到的折磨。
 
@@ -78,11 +80,49 @@ useradd -b /opt -m -s /usr/bin/nologin -U nginx_container
 
 最常见的比如像证书私钥这种需要多容器访问的文件会把所有需要权限的用户添加到这个文件的拥有组里，这时候用户会有两个及以上的组，而 Podman 默认不会处理这种情况。
 
-如果需要访问这样的文件，只能在容器启动时加上 `--userns=keep-id --group-add=keep-groups` 来保证将所有组映射进去，没有 `--userns` 的话 `--grouo-add=keep-groups` 不会生效。
+如果需要访问这样的文件，需要根据你的容器运行时来做不同的处理。
+
+容器运行时可以通过运行 `podman info` 查看，在 `ociRuntime:` 项下。
+
+如果是 crun 的话可以在容器启动时加上 `--userns=keep-id --group-add=keep-groups` 来保证将所有宿主用户的组映射进去，没有 `--userns` 的话 `--group-add=keep-groups` 不会生效。
 
 >这个指令的实现方式说是跳过了创建容器时的一个阶段，我看不太懂，可以自行检索一下
+>
+>也是因为这个原因 runc 容器运行时并不支持 `--group-add=keep-groups` ，目前只有 crun 支持这个选项
+>
+>https://github.com/opencontainers/runc/issues/4642
+>
+>runc 的 star 数要比 crun 高，但前者是 go 写的后者是 c 写的，前者速度没有后者快，但他的速度只体现在容器启动的时候，我个人推荐 runc ，原因请看他们的 github releases 页
+>
+>https://github.com/opencontainers/runc/releases
 
-这时候容器内的用户就不再是 root 了，而是宿主机上运行容器的用户，这会导致很多没有考虑过 Rootless 情况的容器出现问题，可能需要一定的取舍。
+runc 就比较麻烦点，看下面的脚本：
+
+```bash
+# usermod --add-subgids 1234-1234 container_user
+echo "container_user:1234:1" >> /etc/subgid \
+&& sudo -u container_user podman system migrate \
+&& sudo -u container_user podman unshare cat /proc/self/gid_map \
+&& sudo -u container_user podman run --rm --group-add=1234 --gidmap=+g1234:@1234 alpine id
+```
+
+`echo "container_user:1234:1" >> /etc/subgid` 添加可以使用的 subgid ，意思是从1234开始数1个，也就是只有1234一个，注释那个是从1234到1234的意思。
+
+`sudo -u container_user podman system migrate` 刷新。
+
+`sudo -u container_user podman unshare cat /proc/self/gid_map` 查看可用 gid ，第二列是开始的地方，第三列是数几个。
+
+`sudo -u container_user podman run --rm --group-add=1234 --gidmap=+g1234:@1234 alpine id` 先给容器内用户添加组 1234 ，然后将宿主机上的组映射进去。
+
+`--gidmap=+g1234:@1234` `+` 是指附加在前一个 gidmap 上，`g` 是限制只添加组，当 `uidmap` 和 `gidmap` 只有一个时会默认两个都映射， `@` 的意思是不删除默认映射的组和用户。
+
+**注意：**添加了这个映射的容器不需要宿主用户在这个 gid 的组里也可以访问这个组拥有的文件。
+
+>这些文档里都有，但实在难找，刷新的那条指令还是我在试了十几遍在报错信息里找到的
+>
+>虽然麻烦但好像这才是标准操作
+
+如果用了 `--userns=keep-id` 的话这时候容器内的用户就不再是 root 了，而是宿主机上运行容器的用户，这会导致很多没有考虑过 Rootless 情况的容器出现问题，可能需要一定的取舍。
 
 >其实可以改成这样 `--userns=keep-id:uid=0 --group-add=keep-groups` ，这样容器里就是 root 用户带宿主权限组了，能用是能用但我不确定这是不是预期的用法，最好还是直接处理一下容器
 
@@ -112,7 +152,7 @@ Quadlet里也支持你去设置 `reload` 指令的具体实现。
 
 `journalctl -b` 看容器的日志，具体的过滤什么的自己 help 看。
 
-如果 start 完了容器自己停了一般需要 `systemctl enable-linger user` 把 linger 打开，防止用户的最后一个 shell 消失之后 Systemd 自己把 Service 停了。
+如果容器启动了之后自己停了一般是因为没有使用 `systemctl enable-linger user` 把 linger 打开，防止用户的最后一个 shell 消失之后 Systemd 自己停了。
 
 可以 `ls /var/lib/systemd/linger` 看哪些人开了 linger 。
 
@@ -159,6 +199,7 @@ network pod 啥的配置差不多的自己去查文档 `man podman-systemd.unit`
 
 # 实操
 
+>这里是 crun 作为容器运行时时的配置，不建议
 ```bash
 useradd -b /opt -m -s /usr/bin/nologin -U nginx_container \
 && mkdir /opt/nginx_container/.config \
@@ -184,6 +225,38 @@ WantedBy=default.target" > /opt/nginx_container/.config/containers/systemd/nginx
 && journalctl -b -n 100
 ```
 
+>这是 runc 作为容器运行时的配置
+```bash
+useradd -b /opt -m -s /usr/bin/nologin -U nginx_container \
+&& groupadd certs \
+&& mkdir /opt/nginx_container/.config \
+&& mkdir /opt/nginx_container/.config/containers \
+&& mkdir /opt/nginx_container/.config/containers/systemd \
+&& echo "[Container]
+ContainerName=nginx
+Image=docker.io/nginx:1.29
+Network=podman
+PublishPort=80:80
+PublishPort=443:443
+Volume=/opt/nginx_container/data:/etc/nginx
+Volume=/var/opt/certs:/etc/nginx/certs
+PodmanArgs=--group-add=$(id -g certs) --gidmap=+g$(id -g certs):@$(id -g certs)
+
+[Install]
+WantedBy=default.target" > /opt/nginx_container/.config/containers/systemd/nginx.container \
+&& chown -R nginx_container:nginx_container /opt/nginx_container \
+&& echo "nginx_container:$(id -g certs):1" >> /etc/subgid \
+&& sudo -u nginx_container podman system migrate \
+&& sudo -u nginx_container podman unshare cat /proc/self/gid_map \
+&& sudo -u nginx_container podman run --rm  alpine id \
+&& systemctl -M nginx_container@ --user daemon-reload \
+&& systemctl enable-linger nginx_container \
+&& systemctl -M nginx_container@ --user start nginx \
+&& journalctl -b -n 100
+```
+
+>反正不是复制下来一运行就能用的脚本就是了哈哈 主要是看看需要干什么
+
 # 结尾
 
 我也不知道我在干什么
@@ -191,3 +264,11 @@ WantedBy=default.target" > /opt/nginx_container/.config/containers/systemd/nginx
 还挺烦的这套流程， 怀念 docker compose 随便写两下就能跑的感觉
 
 总之如果有发现错误欢迎来仓库发个 issue
+
+>2025-11-28
+
+不是哥们， crun 的依赖里面怎么能有 wayland pipewire mesa 这堆东西的？吓得我直接换 runc 了
+
+所以说libkrun 为什么会依赖图形类的运行库啊？ issue 里也没人提吗？
+
+回来更新一下，看看什么时候有人提这事
