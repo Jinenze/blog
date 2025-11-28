@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"blog.jinenze.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="最近把容器后端从 Docker 切换到了 Podman ，记录一下受到的折磨。">
+    <meta name="description" content="注意本文可能具有很强的时效性，请自行查证  最近把容器后端从 Docker 切换到了 Podman ，记录一下受到的折磨。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Rootless Podman Quadlet 搭建记录">
 <meta property="og:url" content="https://blog.jinenze.xyz/zh-CN/2025/container-podman/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="最近把容器后端从 Docker 切换到了 Podman ，记录一下受到的折磨。">
+<meta property="og:description" content="注意本文可能具有很强的时效性，请自行查证  最近把容器后端从 Docker 切换到了 Podman ，记录一下受到的折磨。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-11-26T00:00:00.000Z">
-<meta property="article:modified_time" content="2025-11-26T07:57:36.926Z">
+<meta property="article:modified_time" content="2025-11-28T00:00:00.000Z">
 <meta property="article:author" content="Jinenze">
 <meta name="twitter:card" content="summary">
 
@@ -237,9 +237,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-11-26 00:00:00 / 修改时间：07:57:36" itemprop="dateCreated datePublished" datetime="2025-11-26T00:00:00+00:00">2025-11-26</time>
+      <time title="创建时间：2025-11-26 00:00:00" itemprop="dateCreated datePublished" datetime="2025-11-26T00:00:00+00:00">2025-11-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-11-28 00:00:00" itemprop="dateModified" datetime="2025-11-28T00:00:00+00:00">2025-11-28</time>
     </span>
 
   
@@ -251,7 +257,10 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>最近把容器后端从 Docker 切换到了 Podman ，记录一下受到的折磨。</p>
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>注意本文可能具有很强的时效性，请自行查证</p>
+</blockquote>
+<p>最近把容器后端从 Docker 切换到了 Podman ，记录一下受到的折磨。</p>
 <span id="more"></span>
 <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Zero trust 安全模型里面有个 Least privilege ，简单来说就是只给程序运行所需要的权限，Docker 的容器毕竟都是 root 用户运行的，不太好。</p>
 <p>Podman 与 Docker 最大的不同就是没有一个中心的进程去管理容器们，这也导致 Podman 需要使用 Systemd 这种服务管理器来实现容器的开机自启，这也是 Quadlet 存在的原因中的一部分。</p>
@@ -289,11 +298,30 @@
 <p><code>-U</code> 生成同名用户组。</p>
 <p>需要注意的是 Podman 默认会把容器内的 root 用户映射为宿主机运行容器的用户，你在把宿主机的文件映射进去的时候如果运行容器的用户权限不够是无法访问的。</p>
 <p>最常见的比如像证书私钥这种需要多容器访问的文件会把所有需要权限的用户添加到这个文件的拥有组里，这时候用户会有两个及以上的组，而 Podman 默认不会处理这种情况。</p>
-<p>如果需要访问这样的文件，只能在容器启动时加上 <code>--userns=keep-id --group-add=keep-groups</code> 来保证将所有组映射进去，没有 <code>--userns</code> 的话 <code>--grouo-add=keep-groups</code> 不会生效。</p>
+<p>如果需要访问这样的文件，需要根据你的容器运行时来做不同的处理。</p>
+<p>容器运行时可以通过运行 <code>podman info</code> 查看，在 <code>ociRuntime:</code> 项下。</p>
+<p>如果是 crun 的话可以在容器启动时加上 <code>--userns=keep-id --group-add=keep-groups</code> 来保证将所有宿主用户的组映射进去，没有 <code>--userns</code> 的话 <code>--group-add=keep-groups</code> 不会生效。</p>
 <blockquote>
 <p>这个指令的实现方式说是跳过了创建容器时的一个阶段，我看不太懂，可以自行检索一下</p>
+<p>也是因为这个原因 runc 容器运行时并不支持 <code>--group-add=keep-groups</code> ，目前只有 crun 支持这个选项</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/opencontainers/runc/issues/4642">https://github.com/opencontainers/runc/issues/4642</a></p>
+<p>runc 的 star 数要比 crun 高，但前者是 go 写的后者是 c 写的，前者速度没有后者快，但他的速度只体现在容器启动的时候，我个人推荐 runc ，原因请看他们的 github releases 页</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/opencontainers/runc/releases">https://github.com/opencontainers/runc/releases</a></p>
 </blockquote>
-<p>这时候容器内的用户就不再是 root 了，而是宿主机上运行容器的用户，这会导致很多没有考虑过 Rootless 情况的容器出现问题，可能需要一定的取舍。</p>
+<p>runc 就比较麻烦点，看下面的脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># usermod --add-subgids 1234-1234 container_user</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;container_user:1234:1&quot;</span> &gt;&gt; /etc/subgid \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u container_user podman system migrate \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u container_user podman unshare <span class="built_in">cat</span> /proc/self/gid_map \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u container_user podman run --<span class="built_in">rm</span> --group-add=1234 --gidmap=+g1234:@1234 alpine <span class="built_in">id</span></span><br></pre></td></tr></table></figure>
+
+<p><code>echo &quot;container_user:1234:1&quot; &gt;&gt; /etc/subgid</code> 添加可以使用的 subgid ，意思是从1234开始数1个，也就是只有1234一个，注释那个是从1234到1234的意思。</p>
+<p><code>sudo -u container_user podman system migrate</code> 刷新。</p>
+<p><code>sudo -u container_user podman unshare cat /proc/self/gid_map</code> 查看可用 gid ，第二列是开始的地方，第三列是数几个。</p>
+<p><code>sudo -u container_user podman run --rm --group-add=1234 --gidmap=+g1234:@1234 alpine id</code> 先给容器内用户添加组 1234 ，然后将宿主机上的组映射进去。</p>
+<p><code>--gidmap=+g1234:@1234</code> <code>+</code> 是指附加在前一个 gidmap 上，<code>g</code> 是限制只添加组，当 <code>uidmap</code> 和 <code>gidmap</code> 只有一个时会默认两个都映射， <code>@</code> 的意思是不删除默认映射的组和用户。</p>
+<p>**注意：**添加了这个映射的容器不需要宿主用户在这个 gid 的组里也可以访问这个组拥有的文件。</p>
+<blockquote>
+<p>这些文档里都有，但实在难找，刷新的那条指令还是我在试了十几遍在报错信息里找到的</p>
+<p>虽然麻烦但好像这才是标准操作</p>
+</blockquote>
+<p>如果用了 <code>--userns=keep-id</code> 的话这时候容器内的用户就不再是 root 了，而是宿主机上运行容器的用户，这会导致很多没有考虑过 Rootless 情况的容器出现问题，可能需要一定的取舍。</p>
 <blockquote>
 <p>其实可以改成这样 <code>--userns=keep-id:uid=0 --group-add=keep-groups</code> ，这样容器里就是 root 用户带宿主权限组了，能用是能用但我不确定这是不是预期的用法，最好还是直接处理一下容器</p>
 </blockquote>
@@ -311,7 +339,7 @@
 <p>主要就是用 <code>systemctl -M contaier_username@ --user start container_name</code> 启动容器然后 <code>systemctl -M contaier_username@ --user stop container_name</code> 停止容器。</p>
 <p>Quadlet里也支持你去设置 <code>reload</code> 指令的具体实现。</p>
 <p><code>journalctl -b</code> 看容器的日志，具体的过滤什么的自己 help 看。</p>
-<p>如果 start 完了容器自己停了一般需要 <code>systemctl enable-linger user</code> 把 linger 打开，防止用户的最后一个 shell 消失之后 Systemd 自己把 Service 停了。</p>
+<p>如果容器启动了之后自己停了一般是因为没有使用 <code>systemctl enable-linger user</code> 把 linger 打开，防止用户的最后一个 shell 消失之后 Systemd 自己停了。</p>
 <p>可以 <code>ls /var/lib/systemd/linger</code> 看哪些人开了 linger 。</p>
 <p>不能在 Systemd 这里把容器服务设置为开机自启， Quadlet 里可以设置。</p>
 <h1 id="Quadlet"><a href="#Quadlet" class="headerlink" title="Quadlet"></a>Quadlet</h1><p>Qaudlet 是用于生成 Systemd unit 的一种配置文件，在 <code>systemctl daemon-reload</code> 时会读取特定路径下的特定后缀文件来生成 unit 配置，具体的可以直接 <code>man podman-systemd.unit</code> 来看，我这里给简单介绍下。</p>
@@ -329,11 +357,28 @@
 <p>以及这里拆成俩只是因为一行有点长。</p>
 <p><code>WantedBy=default.target</code> 设置开机自启，我不懂 Systemd 不知道什么意思。</p>
 <p>network pod 啥的配置差不多的自己去查文档 <code>man podman-systemd.unit</code> 。</p>
-<h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">useradd -b /opt -m -s /usr/bin/nologin -U nginx_container \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers/systemd \</span><br><span class="line">&amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;[Container]</span></span><br><span class="line"><span class="string">ContainerName=nginx</span></span><br><span class="line"><span class="string">Image=docker.io/nginx:1.29</span></span><br><span class="line"><span class="string">Network=podman</span></span><br><span class="line"><span class="string">PublishPort=80:80</span></span><br><span class="line"><span class="string">PublishPort=443:443</span></span><br><span class="line"><span class="string">Volume=/opt/nginx_container/data:/etc/nginx</span></span><br><span class="line"><span class="string">Volume=/var/opt/certs:/etc/nginx/certs</span></span><br><span class="line"><span class="string">PodmanArgs=--userns=keep-id --group-add=keep-groups</span></span><br><span class="line"><span class="string">PodmanArgs=--sysctl net.ipv4.ip_unprivileged_port_start=0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Install]</span></span><br><span class="line"><span class="string">WantedBy=default.target&quot;</span> &gt; /opt/nginx_container/.config/containers/systemd/nginx.container \</span><br><span class="line">&amp;&amp; <span class="built_in">chown</span> -R nginx_container:nginx_container /opt/nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user daemon-reload \</span><br><span class="line">&amp;&amp; systemctl enable-linger nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user start nginx \</span><br><span class="line">&amp;&amp; journalctl -b -n 100</span><br></pre></td></tr></table></figure>
+<h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><blockquote>
+<p>这里是 crun 作为容器运行时时的配置，不建议</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">useradd -b /opt -m -s /usr/bin/nologin -U nginx_container \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers/systemd \</span><br><span class="line">&amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;[Container]</span></span><br><span class="line"><span class="string">ContainerName=nginx</span></span><br><span class="line"><span class="string">Image=docker.io/nginx:1.29</span></span><br><span class="line"><span class="string">Network=podman</span></span><br><span class="line"><span class="string">PublishPort=80:80</span></span><br><span class="line"><span class="string">PublishPort=443:443</span></span><br><span class="line"><span class="string">Volume=/opt/nginx_container/data:/etc/nginx</span></span><br><span class="line"><span class="string">Volume=/var/opt/certs:/etc/nginx/certs</span></span><br><span class="line"><span class="string">PodmanArgs=--userns=keep-id --group-add=keep-groups</span></span><br><span class="line"><span class="string">PodmanArgs=--sysctl net.ipv4.ip_unprivileged_port_start=0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Install]</span></span><br><span class="line"><span class="string">WantedBy=default.target&quot;</span> &gt; /opt/nginx_container/.config/containers/systemd/nginx.container \</span><br><span class="line">&amp;&amp; <span class="built_in">chown</span> -R nginx_container:nginx_container /opt/nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user daemon-reload \</span><br><span class="line">&amp;&amp; systemctl enable-linger nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user start nginx \</span><br><span class="line">&amp;&amp; journalctl -b -n 100</span><br></pre></td></tr></table></figure>
 
+<blockquote>
+<p>这是 runc 作为容器运行时的配置</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">useradd -b /opt -m -s /usr/bin/nologin -U nginx_container \</span><br><span class="line">&amp;&amp; groupadd certs \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers/systemd \</span><br><span class="line">&amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;[Container]</span></span><br><span class="line"><span class="string">ContainerName=nginx</span></span><br><span class="line"><span class="string">Image=docker.io/nginx:1.29</span></span><br><span class="line"><span class="string">Network=podman</span></span><br><span class="line"><span class="string">PublishPort=80:80</span></span><br><span class="line"><span class="string">PublishPort=443:443</span></span><br><span class="line"><span class="string">Volume=/opt/nginx_container/data:/etc/nginx</span></span><br><span class="line"><span class="string">Volume=/var/opt/certs:/etc/nginx/certs</span></span><br><span class="line"><span class="string">PodmanArgs=--group-add=<span class="subst">$(id -g certs)</span> --gidmap=+g<span class="subst">$(id -g certs)</span>:@<span class="subst">$(id -g certs)</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Install]</span></span><br><span class="line"><span class="string">WantedBy=default.target&quot;</span> &gt; /opt/nginx_container/.config/containers/systemd/nginx.container \</span><br><span class="line">&amp;&amp; <span class="built_in">chown</span> -R nginx_container:nginx_container /opt/nginx_container \</span><br><span class="line">&amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;nginx_container:<span class="subst">$(id -g certs)</span>:1&quot;</span> &gt;&gt; /etc/subgid \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u nginx_container podman system migrate \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u nginx_container podman unshare <span class="built_in">cat</span> /proc/self/gid_map \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u nginx_container podman run --<span class="built_in">rm</span>  alpine <span class="built_in">id</span> \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user daemon-reload \</span><br><span class="line">&amp;&amp; systemctl enable-linger nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user start nginx \</span><br><span class="line">&amp;&amp; journalctl -b -n 100</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>反正不是复制下来一运行就能用的脚本就是了哈哈 主要是看看需要干什么</p>
+</blockquote>
 <h1 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h1><p>我也不知道我在干什么</p>
 <p>还挺烦的这套流程， 怀念 docker compose 随便写两下就能跑的感觉</p>
 <p>总之如果有发现错误欢迎来仓库发个 issue</p>
+<blockquote>
+<p>2025-11-28</p>
+</blockquote>
+<p>不是哥们， crun 的依赖里面怎么能有 wayland pipewire mesa 这堆东西的？吓得我直接换 runc 了</p>
+<p>所以说libkrun 为什么会依赖图形类的运行库啊？ issue 里也没人提吗？</p>
+<p>回来更新一下，看看什么时候有人提这事</p>
 
     </div>
 

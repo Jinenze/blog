@@ -237,6 +237,133 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Rootless Podman Quadlet 搭建记录</title>
+    <url>/zh-CN/2025/container-podman/</url>
+    <content><![CDATA[<blockquote>
+<p>注意本文可能具有很强的时效性，请自行查证</p>
+</blockquote>
+<p>最近把容器后端从 Docker 切换到了 Podman ，记录一下受到的折磨。</p>
+<span id="more"></span>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Zero trust 安全模型里面有个 Least privilege ，简单来说就是只给程序运行所需要的权限，Docker 的容器毕竟都是 root 用户运行的，不太好。</p>
+<p>Podman 与 Docker 最大的不同就是没有一个中心的进程去管理容器们，这也导致 Podman 需要使用 Systemd 这种服务管理器来实现容器的开机自启，这也是 Quadlet 存在的原因中的一部分。</p>
+<p>没了中心进程也让系统中的非 root 用户也可以直接创建自己的容器。</p>
+<p>Docker 有 Docker compose 来简单地做一些容器的编排工作，我之前就写了十几个 compose.yaml 然后把他们 include 到一个文件里去，差不多像这样：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">include:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">./service1/compose.yaml</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">./service2/compose.yaml</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">./service3/compose.yaml</span></span><br><span class="line">  <span class="comment"># - ./service4/compose.yaml</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">./service5/compose.yaml</span></span><br></pre></td></tr></table></figure>
+
+<p>这导致我在使用 Podman compose 的时候会突然在神秘的地方出现神秘的空文件夹，或者容器不停报错重启，非常折磨。</p>
+<p>这是因为 Podman compose 跟 Docker compose 对 include 的相对路径的处理方式不同导致的，前者是完全按你在哪执行 compose up 指令来算，而后者是看 compose.yaml 文件的路径来决定的。</p>
+<blockquote>
+<p>最开始决定使用 Podman 是因为他对 nftables 的支持，虽然目前我似乎完全没看见他有写防火墙规则</p>
+</blockquote>
+<p>我实在是对这种重复劳动没啥兴趣，在进行了几天的检索之后我决定直接全部切换到 Quadlet 配置文件来管理。</p>
+<p>Rootless 和 Rootful 的区别确实大，主要是容器内对宿主机的权限映射问题和 Linux 里的权限管理问题。</p>
+<h1 id="Podman"><a href="#Podman" class="headerlink" title="Podman"></a>Podman</h1><p>Podman 在设计时决定了用户与用户之间互不影响，从 Network 和 Pod 这种用来让容器们互相交流的东西居然不能互通这点就能看出来。</p>
+<blockquote>
+<p>这里我真查得昏天暗地，问 AI 也不行，就像完全没人在意这个问题一样，最后给我翻到了这个 <a href="https://github.com/containers/podman/discussions/20408">https://github.com/containers/podman/discussions/20408</a></p>
+<blockquote>
+<p>This is not possible,</p>
+</blockquote>
+<p>给我气傻了当时</p>
+</blockquote>
+<p>不同用户的容器间通讯只能通过绑定宿主机的端口来进行，或者你也可以把需要相互通讯的容器放到同一个用户下运行。</p>
+<p>Podman 中的 Network 和 Pod 的用处差得挺多的，区别在前者类似用来装节点的局域网，后者像局域网里的节点。</p>
+<p>Network 可以给 Container 设置也可以给 Pod 设置， Pod 可以给 Container 设置，同一个 Pod 下的 Container 共用端口和 IP 。</p>
+<p>Podman 会给所有用户创建一个默认 Network 叫 <code>podman</code> ，这个网络没有内置 DNS 不能解析容器名，具体可以用 <code>podman inspect podman</code> 来看到网络的配置，其他网络也可以用这个指令。</p>
+<p>Podman 的许多配置都在 <code>/etc/contaiers/containers.conf</code> 底下，比如这个默认网络的网段和名字，我倒是没找到他的 DNS 的配置。</p>
+<p>Quadlet 与直接运行 <code>podman run</code> 没有本质上的区别，只是一个持久化的配置文件，这也意味着你在配置 Quadlet 时需要去查 <code>podman run</code> 的文档。</p>
+<h1 id="Permission"><a href="#Permission" class="headerlink" title="Permission"></a>Permission</h1><p>Rootless 的容器你总不能拿 root 用户跑对吧？需要新建一个用来跑容器的用户，来看指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">useradd -b /opt -m -s /usr/bin/nologin -U nginx_container</span><br></pre></td></tr></table></figure>
+
+<p><code>-b /opt</code> 用户 home 目录的基础路径，会在 <code>/opt/nginx_container</code> 生成用户的 home 目录。</p>
+<p><code>-m</code> 生成 home 目录。</p>
+<p><code>-s /usr/bin/nologin</code> 用户的登录 shell ，这个 shell 会阻止用户登录，sudo 什么的倒是能用就是了。</p>
+<p><code>-U</code> 生成同名用户组。</p>
+<p>需要注意的是 Podman 默认会把容器内的 root 用户映射为宿主机运行容器的用户，你在把宿主机的文件映射进去的时候如果运行容器的用户权限不够是无法访问的。</p>
+<p>最常见的比如像证书私钥这种需要多容器访问的文件会把所有需要权限的用户添加到这个文件的拥有组里，这时候用户会有两个及以上的组，而 Podman 默认不会处理这种情况。</p>
+<p>如果需要访问这样的文件，需要根据你的容器运行时来做不同的处理。</p>
+<p>容器运行时可以通过运行 <code>podman info</code> 查看，在 <code>ociRuntime:</code> 项下。</p>
+<p>如果是 crun 的话可以在容器启动时加上 <code>--userns=keep-id --group-add=keep-groups</code> 来保证将所有宿主用户的组映射进去，没有 <code>--userns</code> 的话 <code>--group-add=keep-groups</code> 不会生效。</p>
+<blockquote>
+<p>这个指令的实现方式说是跳过了创建容器时的一个阶段，我看不太懂，可以自行检索一下</p>
+<p>也是因为这个原因 runc 容器运行时并不支持 <code>--group-add=keep-groups</code> ，目前只有 crun 支持这个选项</p>
+<p><a href="https://github.com/opencontainers/runc/issues/4642">https://github.com/opencontainers/runc/issues/4642</a></p>
+<p>runc 的 star 数要比 crun 高，但前者是 go 写的后者是 c 写的，前者速度没有后者快，但他的速度只体现在容器启动的时候，我个人推荐 runc ，原因请看他们的 github releases 页</p>
+<p><a href="https://github.com/opencontainers/runc/releases">https://github.com/opencontainers/runc/releases</a></p>
+</blockquote>
+<p>runc 就比较麻烦点，看下面的脚本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># usermod --add-subgids 1234-1234 container_user</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;container_user:1234:1&quot;</span> &gt;&gt; /etc/subgid \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u container_user podman system migrate \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u container_user podman unshare <span class="built_in">cat</span> /proc/self/gid_map \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u container_user podman run --<span class="built_in">rm</span> --group-add=1234 --gidmap=+g1234:@1234 alpine <span class="built_in">id</span></span><br></pre></td></tr></table></figure>
+
+<p><code>echo &quot;container_user:1234:1&quot; &gt;&gt; /etc/subgid</code> 添加可以使用的 subgid ，意思是从1234开始数1个，也就是只有1234一个，注释那个是从1234到1234的意思。</p>
+<p><code>sudo -u container_user podman system migrate</code> 刷新。</p>
+<p><code>sudo -u container_user podman unshare cat /proc/self/gid_map</code> 查看可用 gid ，第二列是开始的地方，第三列是数几个。</p>
+<p><code>sudo -u container_user podman run --rm --group-add=1234 --gidmap=+g1234:@1234 alpine id</code> 先给容器内用户添加组 1234 ，然后将宿主机上的组映射进去。</p>
+<p><code>--gidmap=+g1234:@1234</code> <code>+</code> 是指附加在前一个 gidmap 上，<code>g</code> 是限制只添加组，当 <code>uidmap</code> 和 <code>gidmap</code> 只有一个时会默认两个都映射， <code>@</code> 的意思是不删除默认映射的组和用户。</p>
+<p>**注意：**添加了这个映射的容器不需要宿主用户在这个 gid 的组里也可以访问这个组拥有的文件。</p>
+<blockquote>
+<p>这些文档里都有，但实在难找，刷新的那条指令还是我在试了十几遍在报错信息里找到的</p>
+<p>虽然麻烦但好像这才是标准操作</p>
+</blockquote>
+<p>如果用了 <code>--userns=keep-id</code> 的话这时候容器内的用户就不再是 root 了，而是宿主机上运行容器的用户，这会导致很多没有考虑过 Rootless 情况的容器出现问题，可能需要一定的取舍。</p>
+<blockquote>
+<p>其实可以改成这样 <code>--userns=keep-id:uid=0 --group-add=keep-groups</code> ，这样容器里就是 root 用户带宿主权限组了，能用是能用但我不确定这是不是预期的用法，最好还是直接处理一下容器</p>
+</blockquote>
+<p>容器里的 Linux 也是 Linux ，没什么太大区别，这也意味着如果你容器里用的不是 root 账户也会遇到容器里的权限问题，比如绑定不了1024以下的端口一类的。</p>
+<p>将非 root 用户可以使用的最低端口设置为0：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sysctl -w net.ipv4.ip_unprivileged_port_start=0</span><br></pre></td></tr></table></figure>
+
+<p>宿主机上持久化设置需要写入 <code>/etc/sysctl.d/*.conf</code> ，具体以自己的系统为准。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">net.ipv4.ip_unprivileged_port_start=0</span><br></pre></td></tr></table></figure>
+<p>Podman 中直接加上 <code>--sysctl</code> 就行，底下有写。</p>
+<h1 id="Systemd"><a href="#Systemd" class="headerlink" title="Systemd"></a>Systemd</h1><p>Quadlet 生成的是 Systemd 的配置文件，这也意味着你也得懂一点 Systemd 。</p>
+<blockquote>
+<p>我真不懂</p>
+</blockquote>
+<p>主要就是用 <code>systemctl -M contaier_username@ --user start container_name</code> 启动容器然后 <code>systemctl -M contaier_username@ --user stop container_name</code> 停止容器。</p>
+<p>Quadlet里也支持你去设置 <code>reload</code> 指令的具体实现。</p>
+<p><code>journalctl -b</code> 看容器的日志，具体的过滤什么的自己 help 看。</p>
+<p>如果容器启动了之后自己停了一般是因为没有使用 <code>systemctl enable-linger user</code> 把 linger 打开，防止用户的最后一个 shell 消失之后 Systemd 自己停了。</p>
+<p>可以 <code>ls /var/lib/systemd/linger</code> 看哪些人开了 linger 。</p>
+<p>不能在 Systemd 这里把容器服务设置为开机自启， Quadlet 里可以设置。</p>
+<h1 id="Quadlet"><a href="#Quadlet" class="headerlink" title="Quadlet"></a>Quadlet</h1><p>Qaudlet 是用于生成 Systemd unit 的一种配置文件，在 <code>systemctl daemon-reload</code> 时会读取特定路径下的特定后缀文件来生成 unit 配置，具体的可以直接 <code>man podman-systemd.unit</code> 来看，我这里给简单介绍下。</p>
+<p>可以写一些和 Systemd 的 unit 一样的配置。</p>
+<p>来看一个 rootless 的 nginx 容器配置：</p>
+<blockquote>
+<p>nginx.container</p>
+</blockquote>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[Container]</span></span><br><span class="line"><span class="attr">ContainerName</span>=nginx</span><br><span class="line"><span class="attr">Image</span>=docker.io/nginx:<span class="number">1.29</span></span><br><span class="line"><span class="attr">Network</span>=podman</span><br><span class="line"><span class="attr">PublishPort</span>=<span class="number">80</span>:<span class="number">80</span></span><br><span class="line"><span class="attr">PublishPort</span>=<span class="number">443</span>:<span class="number">443</span></span><br><span class="line"><span class="attr">Volume</span>=/opt/nginx_container/data:/etc/nginx</span><br><span class="line"><span class="attr">Volume</span>=/var/opt/certs:/etc/nginx/certs</span><br><span class="line"><span class="attr">PodmanArgs</span>=--userns=keep-id --group-add=keep-groups</span><br><span class="line"><span class="attr">PodmanArgs</span>=--sysctl net.ipv4.ip_unprivileged_port_start=<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=default.target</span><br></pre></td></tr></table></figure>
+
+<p><code>ContainerName</code> 控制容器名与同一网络下的 Podman 提供的 DNS 解析名</p>
+<p><code>Network</code> 容器所属的网络，一般为 <code>host</code> <code>podman</code> 或者 <code>none</code>  ， <code>podman</code> 为 Podman 为每个用户单独创建的不带 DNS 解析的网络，详细的上面写了。</p>
+<p><code>PodmanArgs</code> 为 <code>podman run</code> 后面跟着的 flag，详细的上面写了。</p>
+<p>这里保留权限主要是为了访问网站的证书，注意 nginx 在 rootless 环境下需要额外配置，可以看 docker 仓库中的 nginx 的简介。</p>
+<p>以及这里拆成俩只是因为一行有点长。</p>
+<p><code>WantedBy=default.target</code> 设置开机自启，我不懂 Systemd 不知道什么意思。</p>
+<p>network pod 啥的配置差不多的自己去查文档 <code>man podman-systemd.unit</code> 。</p>
+<h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><blockquote>
+<p>这里是 crun 作为容器运行时时的配置，不建议</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">useradd -b /opt -m -s /usr/bin/nologin -U nginx_container \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers/systemd \</span><br><span class="line">&amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;[Container]</span></span><br><span class="line"><span class="string">ContainerName=nginx</span></span><br><span class="line"><span class="string">Image=docker.io/nginx:1.29</span></span><br><span class="line"><span class="string">Network=podman</span></span><br><span class="line"><span class="string">PublishPort=80:80</span></span><br><span class="line"><span class="string">PublishPort=443:443</span></span><br><span class="line"><span class="string">Volume=/opt/nginx_container/data:/etc/nginx</span></span><br><span class="line"><span class="string">Volume=/var/opt/certs:/etc/nginx/certs</span></span><br><span class="line"><span class="string">PodmanArgs=--userns=keep-id --group-add=keep-groups</span></span><br><span class="line"><span class="string">PodmanArgs=--sysctl net.ipv4.ip_unprivileged_port_start=0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Install]</span></span><br><span class="line"><span class="string">WantedBy=default.target&quot;</span> &gt; /opt/nginx_container/.config/containers/systemd/nginx.container \</span><br><span class="line">&amp;&amp; <span class="built_in">chown</span> -R nginx_container:nginx_container /opt/nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user daemon-reload \</span><br><span class="line">&amp;&amp; systemctl enable-linger nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user start nginx \</span><br><span class="line">&amp;&amp; journalctl -b -n 100</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这是 runc 作为容器运行时的配置</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">useradd -b /opt -m -s /usr/bin/nologin -U nginx_container \</span><br><span class="line">&amp;&amp; groupadd certs \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers/systemd \</span><br><span class="line">&amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;[Container]</span></span><br><span class="line"><span class="string">ContainerName=nginx</span></span><br><span class="line"><span class="string">Image=docker.io/nginx:1.29</span></span><br><span class="line"><span class="string">Network=podman</span></span><br><span class="line"><span class="string">PublishPort=80:80</span></span><br><span class="line"><span class="string">PublishPort=443:443</span></span><br><span class="line"><span class="string">Volume=/opt/nginx_container/data:/etc/nginx</span></span><br><span class="line"><span class="string">Volume=/var/opt/certs:/etc/nginx/certs</span></span><br><span class="line"><span class="string">PodmanArgs=--group-add=<span class="subst">$(id -g certs)</span> --gidmap=+g<span class="subst">$(id -g certs)</span>:@<span class="subst">$(id -g certs)</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Install]</span></span><br><span class="line"><span class="string">WantedBy=default.target&quot;</span> &gt; /opt/nginx_container/.config/containers/systemd/nginx.container \</span><br><span class="line">&amp;&amp; <span class="built_in">chown</span> -R nginx_container:nginx_container /opt/nginx_container \</span><br><span class="line">&amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;nginx_container:<span class="subst">$(id -g certs)</span>:1&quot;</span> &gt;&gt; /etc/subgid \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u nginx_container podman system migrate \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u nginx_container podman unshare <span class="built_in">cat</span> /proc/self/gid_map \</span><br><span class="line">&amp;&amp; <span class="built_in">sudo</span> -u nginx_container podman run --<span class="built_in">rm</span>  alpine <span class="built_in">id</span> \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user daemon-reload \</span><br><span class="line">&amp;&amp; systemctl enable-linger nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user start nginx \</span><br><span class="line">&amp;&amp; journalctl -b -n 100</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>反正不是复制下来一运行就能用的脚本就是了哈哈 主要是看看需要干什么</p>
+</blockquote>
+<h1 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h1><p>我也不知道我在干什么</p>
+<p>还挺烦的这套流程， 怀念 docker compose 随便写两下就能跑的感觉</p>
+<p>总之如果有发现错误欢迎来仓库发个 issue</p>
+<blockquote>
+<p>2025-11-28</p>
+</blockquote>
+<p>不是哥们， crun 的依赖里面怎么能有 wayland pipewire mesa 这堆东西的？吓得我直接换 runc 了</p>
+<p>所以说libkrun 为什么会依赖图形类的运行库啊？ issue 里也没人提吗？</p>
+<p>回来更新一下，看看什么时候有人提这事</p>
+]]></content>
+  </entry>
+  <entry>
     <title>关于Hexo在Github Pages上的搭建</title>
     <url>/zh-CN/2025/AboutHexo/</url>
     <content><![CDATA[<p>记录一下我在Github Page上搭建Hexo的过程</p>
@@ -380,94 +507,6 @@
 <p>这样配置时，当你推送代码到 <code>main</code> 分支的时候，会触发这个action</p>
 <p>这样配置时就不需要在容器里安装 <code>git</code> 了，直接在宿主机把 <code>data</code> 文件夹上传到你仓库的 <code>main</code> 分支就行</p>
 <p>部署时默认部署在 <code>gh-pages</code> 分支，记得把Github Page部署的 <code>branch</code> 换了</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Rootless Podman Quadlet 搭建记录</title>
-    <url>/zh-CN/2025/container-podman/</url>
-    <content><![CDATA[<p>最近把容器后端从 Docker 切换到了 Podman ，记录一下受到的折磨。</p>
-<span id="more"></span>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Zero trust 安全模型里面有个 Least privilege ，简单来说就是只给程序运行所需要的权限，Docker 的容器毕竟都是 root 用户运行的，不太好。</p>
-<p>Podman 与 Docker 最大的不同就是没有一个中心的进程去管理容器们，这也导致 Podman 需要使用 Systemd 这种服务管理器来实现容器的开机自启，这也是 Quadlet 存在的原因中的一部分。</p>
-<p>没了中心进程也让系统中的非 root 用户也可以直接创建自己的容器。</p>
-<p>Docker 有 Docker compose 来简单地做一些容器的编排工作，我之前就写了十几个 compose.yaml 然后把他们 include 到一个文件里去，差不多像这样：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">include:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">./service1/compose.yaml</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">./service2/compose.yaml</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">./service3/compose.yaml</span></span><br><span class="line">  <span class="comment"># - ./service4/compose.yaml</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">./service5/compose.yaml</span></span><br></pre></td></tr></table></figure>
-
-<p>这导致我在使用 Podman compose 的时候会突然在神秘的地方出现神秘的空文件夹，或者容器不停报错重启，非常折磨。</p>
-<p>这是因为 Podman compose 跟 Docker compose 对 include 的相对路径的处理方式不同导致的，前者是完全按你在哪执行 compose up 指令来算，而后者是看 compose.yaml 文件的路径来决定的。</p>
-<blockquote>
-<p>最开始决定使用 Podman 是因为他对 nftables 的支持，虽然目前我似乎完全没看见他有写防火墙规则</p>
-</blockquote>
-<p>我实在是对这种重复劳动没啥兴趣，在进行了几天的检索之后我决定直接全部切换到 Quadlet 配置文件来管理。</p>
-<p>Rootless 和 Rootful 的区别确实大，主要是容器内对宿主机的权限映射问题和 Linux 里的权限管理问题。</p>
-<h1 id="Podman"><a href="#Podman" class="headerlink" title="Podman"></a>Podman</h1><p>Podman 在设计时决定了用户与用户之间互不影响，从 Network 和 Pod 这种用来让容器们互相交流的东西居然不能互通这点就能看出来。</p>
-<blockquote>
-<p>这里我真查得昏天暗地，问 AI 也不行，就像完全没人在意这个问题一样，最后给我翻到了这个 <a href="https://github.com/containers/podman/discussions/20408">https://github.com/containers/podman/discussions/20408</a></p>
-<blockquote>
-<p>This is not possible,</p>
-</blockquote>
-<p>给我气傻了当时</p>
-</blockquote>
-<p>不同用户的容器间通讯只能通过绑定宿主机的端口来进行，或者你也可以把需要相互通讯的容器放到同一个用户下运行。</p>
-<p>Podman 中的 Network 和 Pod 的用处差得挺多的，区别在前者类似用来装节点的局域网，后者像局域网里的节点。</p>
-<p>Network 可以给 Container 设置也可以给 Pod 设置， Pod 可以给 Container 设置，同一个 Pod 下的 Container 共用端口和 IP 。</p>
-<p>Podman 会给所有用户创建一个默认 Network 叫 <code>podman</code> ，这个网络没有内置 DNS 不能解析容器名，具体可以用 <code>podman inspect podman</code> 来看到网络的配置，其他网络也可以用这个指令。</p>
-<p>Podman 的许多配置都在 <code>/etc/contaiers/containers.conf</code> 底下，比如这个默认网络的网段和名字，我倒是没找到他的 DNS 的配置。</p>
-<p>Quadlet 与直接运行 <code>podman run</code> 没有本质上的区别，只是一个持久化的配置文件，这也意味着你在配置 Quadlet 时需要去查 <code>podman run</code> 的文档。</p>
-<h1 id="Permission"><a href="#Permission" class="headerlink" title="Permission"></a>Permission</h1><p>Rootless 的容器你总不能拿 root 用户跑对吧？需要新建一个用来跑容器的用户，来看指令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">useradd -b /opt -m -s /usr/bin/nologin -U nginx_container</span><br></pre></td></tr></table></figure>
-
-<p><code>-b /opt</code> 用户 home 目录的基础路径，会在 <code>/opt/nginx_container</code> 生成用户的 home 目录。</p>
-<p><code>-m</code> 生成 home 目录。</p>
-<p><code>-s /usr/bin/nologin</code> 用户的登录 shell ，这个 shell 会阻止用户登录，sudo 什么的倒是能用就是了。</p>
-<p><code>-U</code> 生成同名用户组。</p>
-<p>需要注意的是 Podman 默认会把容器内的 root 用户映射为宿主机运行容器的用户，你在把宿主机的文件映射进去的时候如果运行容器的用户权限不够是无法访问的。</p>
-<p>最常见的比如像证书私钥这种需要多容器访问的文件会把所有需要权限的用户添加到这个文件的拥有组里，这时候用户会有两个及以上的组，而 Podman 默认不会处理这种情况。</p>
-<p>如果需要访问这样的文件，只能在容器启动时加上 <code>--userns=keep-id --group-add=keep-groups</code> 来保证将所有组映射进去，没有 <code>--userns</code> 的话 <code>--grouo-add=keep-groups</code> 不会生效。</p>
-<blockquote>
-<p>这个指令的实现方式说是跳过了创建容器时的一个阶段，我看不太懂，可以自行检索一下</p>
-</blockquote>
-<p>这时候容器内的用户就不再是 root 了，而是宿主机上运行容器的用户，这会导致很多没有考虑过 Rootless 情况的容器出现问题，可能需要一定的取舍。</p>
-<blockquote>
-<p>其实可以改成这样 <code>--userns=keep-id:uid=0 --group-add=keep-groups</code> ，这样容器里就是 root 用户带宿主权限组了，能用是能用但我不确定这是不是预期的用法，最好还是直接处理一下容器</p>
-</blockquote>
-<p>容器里的 Linux 也是 Linux ，没什么太大区别，这也意味着如果你容器里用的不是 root 账户也会遇到容器里的权限问题，比如绑定不了1024以下的端口一类的。</p>
-<p>将非 root 用户可以使用的最低端口设置为0：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sysctl -w net.ipv4.ip_unprivileged_port_start=0</span><br></pre></td></tr></table></figure>
-
-<p>宿主机上持久化设置需要写入 <code>/etc/sysctl.d/*.conf</code> ，具体以自己的系统为准。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">net.ipv4.ip_unprivileged_port_start=0</span><br></pre></td></tr></table></figure>
-<p>Podman 中直接加上 <code>--sysctl</code> 就行，底下有写。</p>
-<h1 id="Systemd"><a href="#Systemd" class="headerlink" title="Systemd"></a>Systemd</h1><p>Quadlet 生成的是 Systemd 的配置文件，这也意味着你也得懂一点 Systemd 。</p>
-<blockquote>
-<p>我真不懂</p>
-</blockquote>
-<p>主要就是用 <code>systemctl -M contaier_username@ --user start container_name</code> 启动容器然后 <code>systemctl -M contaier_username@ --user stop container_name</code> 停止容器。</p>
-<p>Quadlet里也支持你去设置 <code>reload</code> 指令的具体实现。</p>
-<p><code>journalctl -b</code> 看容器的日志，具体的过滤什么的自己 help 看。</p>
-<p>如果 start 完了容器自己停了一般需要 <code>systemctl enable-linger user</code> 把 linger 打开，防止用户的最后一个 shell 消失之后 Systemd 自己把 Service 停了。</p>
-<p>可以 <code>ls /var/lib/systemd/linger</code> 看哪些人开了 linger 。</p>
-<p>不能在 Systemd 这里把容器服务设置为开机自启， Quadlet 里可以设置。</p>
-<h1 id="Quadlet"><a href="#Quadlet" class="headerlink" title="Quadlet"></a>Quadlet</h1><p>Qaudlet 是用于生成 Systemd unit 的一种配置文件，在 <code>systemctl daemon-reload</code> 时会读取特定路径下的特定后缀文件来生成 unit 配置，具体的可以直接 <code>man podman-systemd.unit</code> 来看，我这里给简单介绍下。</p>
-<p>可以写一些和 Systemd 的 unit 一样的配置。</p>
-<p>来看一个 rootless 的 nginx 容器配置：</p>
-<blockquote>
-<p>nginx.container</p>
-</blockquote>
-<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[Container]</span></span><br><span class="line"><span class="attr">ContainerName</span>=nginx</span><br><span class="line"><span class="attr">Image</span>=docker.io/nginx:<span class="number">1.29</span></span><br><span class="line"><span class="attr">Network</span>=podman</span><br><span class="line"><span class="attr">PublishPort</span>=<span class="number">80</span>:<span class="number">80</span></span><br><span class="line"><span class="attr">PublishPort</span>=<span class="number">443</span>:<span class="number">443</span></span><br><span class="line"><span class="attr">Volume</span>=/opt/nginx_container/data:/etc/nginx</span><br><span class="line"><span class="attr">Volume</span>=/var/opt/certs:/etc/nginx/certs</span><br><span class="line"><span class="attr">PodmanArgs</span>=--userns=keep-id --group-add=keep-groups</span><br><span class="line"><span class="attr">PodmanArgs</span>=--sysctl net.ipv4.ip_unprivileged_port_start=<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=default.target</span><br></pre></td></tr></table></figure>
-
-<p><code>ContainerName</code> 控制容器名与同一网络下的 Podman 提供的 DNS 解析名</p>
-<p><code>Network</code> 容器所属的网络，一般为 <code>host</code> <code>podman</code> 或者 <code>none</code>  ， <code>podman</code> 为 Podman 为每个用户单独创建的不带 DNS 解析的网络，详细的上面写了。</p>
-<p><code>PodmanArgs</code> 为 <code>podman run</code> 后面跟着的 flag，详细的上面写了。</p>
-<p>这里保留权限主要是为了访问网站的证书，注意 nginx 在 rootless 环境下需要额外配置，可以看 docker 仓库中的 nginx 的简介。</p>
-<p>以及这里拆成俩只是因为一行有点长。</p>
-<p><code>WantedBy=default.target</code> 设置开机自启，我不懂 Systemd 不知道什么意思。</p>
-<p>network pod 啥的配置差不多的自己去查文档 <code>man podman-systemd.unit</code> 。</p>
-<h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">useradd -b /opt -m -s /usr/bin/nologin -U nginx_container \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers \</span><br><span class="line">&amp;&amp; <span class="built_in">mkdir</span> /opt/nginx_container/.config/containers/systemd \</span><br><span class="line">&amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;[Container]</span></span><br><span class="line"><span class="string">ContainerName=nginx</span></span><br><span class="line"><span class="string">Image=docker.io/nginx:1.29</span></span><br><span class="line"><span class="string">Network=podman</span></span><br><span class="line"><span class="string">PublishPort=80:80</span></span><br><span class="line"><span class="string">PublishPort=443:443</span></span><br><span class="line"><span class="string">Volume=/opt/nginx_container/data:/etc/nginx</span></span><br><span class="line"><span class="string">Volume=/var/opt/certs:/etc/nginx/certs</span></span><br><span class="line"><span class="string">PodmanArgs=--userns=keep-id --group-add=keep-groups</span></span><br><span class="line"><span class="string">PodmanArgs=--sysctl net.ipv4.ip_unprivileged_port_start=0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Install]</span></span><br><span class="line"><span class="string">WantedBy=default.target&quot;</span> &gt; /opt/nginx_container/.config/containers/systemd/nginx.container \</span><br><span class="line">&amp;&amp; <span class="built_in">chown</span> -R nginx_container:nginx_container /opt/nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user daemon-reload \</span><br><span class="line">&amp;&amp; systemctl enable-linger nginx_container \</span><br><span class="line">&amp;&amp; systemctl -M nginx_container@ --user start nginx \</span><br><span class="line">&amp;&amp; journalctl -b -n 100</span><br></pre></td></tr></table></figure>
-
-<h1 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h1><p>我也不知道我在干什么</p>
-<p>还挺烦的这套流程， 怀念 docker compose 随便写两下就能跑的感觉</p>
-<p>总之如果有发现错误欢迎来仓库发个 issue</p>
 ]]></content>
   </entry>
 </search>
