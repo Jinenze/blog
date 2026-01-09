@@ -152,7 +152,7 @@ Quadlet里也支持你去设置 `reload` 指令的具体实现。
 
 `journalctl -b` 看容器的日志，具体的过滤什么的自己 help 看。
 
-如果容器启动了之后自己停了一般是因为没有使用 `systemctl enable-linger user` 把 linger 打开，防止用户的最后一个 shell 消失之后 Systemd 自己停了。
+如果容器启动了之后自己停了一般是因为没有使用 `loginctl enable-linger user` 把 linger 打开，防止用户的最后一个 shell 消失之后 Systemd 自己停了。
 
 可以 `ls /var/lib/systemd/linger` 看哪些人开了 linger 。
 
@@ -220,7 +220,7 @@ PodmanArgs=--sysctl net.ipv4.ip_unprivileged_port_start=0
 WantedBy=default.target" > /opt/nginx_container/.config/containers/systemd/nginx.container \
 && chown -R nginx_container:nginx_container /opt/nginx_container \
 && systemctl -M nginx_container@ --user daemon-reload \
-&& systemctl enable-linger nginx_container \
+&& loginctl enable-linger nginx_container \
 && systemctl -M nginx_container@ --user start nginx \
 && journalctl -b -n 100
 ```
@@ -250,7 +250,7 @@ WantedBy=default.target" > /opt/nginx_container/.config/containers/systemd/nginx
 && sudo -u nginx_container podman unshare cat /proc/self/gid_map \
 && sudo -u nginx_container podman run --rm  alpine id \
 && systemctl -M nginx_container@ --user daemon-reload \
-&& systemctl enable-linger nginx_container \
+&& loginctl enable-linger nginx_container \
 && systemctl -M nginx_container@ --user start nginx \
 && journalctl -b -n 100
 ```
